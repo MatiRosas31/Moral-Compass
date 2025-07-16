@@ -1,0 +1,214 @@
+import datetime
+"""""
+1) Redefinir los bloques en los dias libres para que sean mas largos [CCOMPLETADO]
+2) Siempre se debe dejar un bloque de 1 hora par estudiar en la semana[COMPLETADO]
+2) Los sabados luego de las 19:00 se pueden hacer cosas de ocio. O sea, no se puede estudiar ni trabajar.
+"""""
+# -------------------------------
+# CONFIGURACIÓN INICIAL
+# python moral_compass.py 
+# -------------------------------
+
+HORARIO_ESTUDIO = {"lunes": [8, 10], "martes": [8, 10], "miércoles": [8, 10], "jueves": [8, 10], "viernes": [8, 10]}
+HORARIO_TRABAJO = {"lunes": [10, 19], "martes": [10, 19], "miércoles": [10, 19], "jueves": [10, 19], "viernes": [10, 19]}
+HORARIO_TENIS = {"martes": [19.5, 23], "jueves": [19.5, 23]}
+
+
+# -------------------------------
+# MODELO DE TAREA
+# -------------------------------
+
+class Tarea:
+    def __init__(self, nombre, urgencia, prioridad, duracion, tipo):
+        self.nombre = nombre
+        self.urgencia = urgencia
+        self.prioridad = prioridad
+        self.duracion = duracion  # en minutos
+        self.tipo = tipo
+
+    def puntaje(self):
+        return self.urgencia * 1.5 + self.prioridad
+    #El puntaje se calcula como una combinación ponderada de urgencia y prioridad
+
+    def __repr__(self):
+        return f"{self.nombre} ({self.duracion} min, puntaje: {self.puntaje():.1f})"
+
+# -------------------------------
+# UTILIDADES DE TIEMPO
+# -------------------------------
+
+def hora_actual():
+    ahora = datetime.datetime.now()
+    return ahora.strftime('%A').lower(), ahora.hour + ahora.minute / 60
+    # devuelve: wednesday
+    #            14.75
+
+def hora_actual_decimal():
+    ahora = datetime.datetime.now()
+    return ahora.hour + ahora.minute / 60  # Hora actual en formato decimal
+
+def convertir_dia(dia):
+    mapa = {
+        "monday": "lunes",
+        "tuesday": "martes",
+        "wednesday": "miércoles",
+        "thursday": "jueves",
+        "friday": "viernes",
+        "saturday": "sábado",
+        "sunday": "domingo"
+    }
+    return mapa[dia]
+
+
+def bloques_libres(dia, hora_now):
+    bloques = []
+
+    # Bloques predefinidos ocupados
+    # Se consideran horarios de estudio, trabajo y tenis
+    # Si el día es sábado o domingo, se ignoran los horarios de estudio y trabajo
+    ocupados = []
+    if dia in HORARIO_ESTUDIO:
+        ocupados.append(HORARIO_ESTUDIO[dia])
+    if dia in HORARIO_TRABAJO:
+        ocupados.append(HORARIO_TRABAJO[dia])
+    if dia in HORARIO_TENIS:
+        ocupados.append(HORARIO_TENIS[dia])
+
+# Si el dia no esta dentro de ninguno de los horarios, se considera que no hay ocupación
+    inicio = 10.0
+    fin = 19.0
+
+    for bloque in sorted(ocupados):
+        if inicio < bloque[0]:
+            bloques.append([inicio, bloque[0]])
+        inicio = max(inicio, bloque[1])
+    if inicio < fin:
+        bloques.append([inicio, fin])
+
+    # Filtrar bloques anteriores a la hora actual
+    return [b for b in bloques if b[1] > hora_now]
+
+
+def duracion_bloque(b):
+    #Quiero restar la hora actual menos la hora de inicio del bloque b[0] y multiplicar por 60 para obtener la duración en minutos
+    ahora = datetime.datetime.now()
+    hora_actual = ahora.hour + ahora.minute / 60 
+    final_bloque = b[1]
+    return int((final_bloque - hora_actual) * 60) 
+
+
+# -------------------------------
+# GENERACIÓN DE TAREAS
+# -------------------------------
+
+def tareas_basicas():
+    dia_actual, _ = hora_actual()
+    dia_actual = convertir_dia(dia_actual)
+    tareas = []
+
+    res = input("¿Tienes resuelta la comida de esta noche? (s/n): ").lower()
+    if res == "n":
+        ing = input("¿Ya tienes los ingredientes? (s/n): ").lower()
+        if ing == "n":
+            tareas.append(Tarea("Ir al supermercado", urgencia=8, prioridad=7, duracion=30, tipo="necesidad"))
+        tareas.append(Tarea("Cocinar", urgencia=6, prioridad=7, duracion=40, tipo="necesidad"))
+
+    examen = input("¿Tienes un examen o entrevista cercana? (s/n): ").lower()
+    if examen == "s":
+        tareas.append(Tarea("Estudiar / Preparar entrevista", urgencia=9, prioridad=10, duracion=120, tipo="obligación"))
+    else:
+        duracion_matematicas = 90 if (dia_actual == "sábado" or dia_actual == "domingo") else 60
+        tareas.append(Tarea("Estudiar Matematicas / Programacion", urgencia=5, prioridad=6, duracion=duracion_matematicas, tipo="obligación"))
+    energia = int(input("¿Cuánta energía tienes ahora mismo? (0 a 10): "))
+    if energia < 4:
+        tareas.append(Tarea("Descansar / Siesta", urgencia=5, prioridad=8, duracion=30, tipo="personal"))
+
+    
+
+    personal = input("¿Tienes alguna tarea personal pendiente? (Algun curso, aprender algo de programacion nuevo, etc.) (separa por coma): ")
+    for personal in personal.split(","):
+        personal = personal.strip()
+        if personal:
+            duracion_personal = 90 if (dia_actual == "sábado" or dia_actual == "domingo") else 45
+            # Aumentar duración de tareas personales los sábados y domingos
+            tareas.append(Tarea(personal, urgencia=4, prioridad=6, duracion=duracion_personal, tipo="personal"))
+    deseos = input("¿Qué te gustaría hacer hoy por placer? (separa por coma): ")
+    for deseo in deseos.split(","):
+        deseo = deseo.strip()
+        if deseo:
+            duracion_deseo = 120 if (dia_actual == "sábado" or dia_actual == "domingo") else 60
+            # Aumentar duración de deseos los sábados y domingos
+            tareas.append(Tarea(deseo, urgencia=3, prioridad=5, duracion=duracion_deseo, tipo="deseo"))
+
+    # print("\nTareas generadas:")
+    # for tarea in tareas:
+    #     print(f" - {tarea}")
+
+    return tareas
+
+
+# -------------------------------
+# PLANIFICADOR PRINCIPAL
+# -------------------------------
+
+def planificar_tareas(tareas, bloques):
+    #Aqui las tareas se ordenan por puntaje, de mayor a menor
+    tareas_ordenadas = sorted(tareas, key=lambda t: t.puntaje(), reverse=True)
+    plan = []
+
+    for bloque in bloques:
+        tiempo_restante = duracion_bloque(bloque)
+        hora_inicio = hora_actual_decimal()
+        while tiempo_restante > 0 and tareas_ordenadas:
+            tarea = tareas_ordenadas[0]
+            if tarea.duracion <= tiempo_restante:
+                plan.append((hora_inicio, tarea))
+                hora_inicio += tarea.duracion / 60
+                tiempo_restante -= tarea.duracion
+                tareas_ordenadas.pop(0)
+            else:
+                break
+
+    return plan
+
+
+# -------------------------------
+# MAIN
+# -------------------------------
+
+def main():
+    dia_raw, hora_now = hora_actual()
+    dia_raw = dia_raw.lower()
+    dia = "saturday"  # convertir_dia(dia_raw)
+    
+    now  = datetime.datetime.now()
+    now_time = f"{now.hour:02}:{now.minute:02}"  # Formatear como HH:MM
+    print(f"\n📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}")
+    bloques = bloques_libres(dia, hora_now)
+
+    if not bloques:
+        print("No tienes tiempo libre disponible hoy 💤")
+        return
+
+    print(f"🕒 Bloques libres detectados:")
+    for b in bloques:
+        ahora = datetime.datetime.now()
+        horita = f"{ahora.hour:02}:{ahora.minute:02}"  # Formatear como HH:MM
+        print(f" - De {b[0]:.2f} a {b[1]:.2f} hs")
+        print(f"Tiempo restante del bloque ⚠️  De {horita} a {b[1]:.2f} hs ({duracion_bloque(b)} min)")
+
+    tareas = tareas_basicas()
+    if not tareas:
+        print("No se han registrado tareas.")
+        return
+
+    plan = planificar_tareas(tareas, bloques)
+
+    print("\n✅ Plan sugerido para hoy:")
+    for hora, tarea in plan:
+        h = int(hora)
+        m = int((hora - h) * 60)
+        print(f" - {h:02}:{m:02} → {tarea.nombre} ({tarea.duracion} min)")
+
+if __name__ == "__main__":
+    main()
