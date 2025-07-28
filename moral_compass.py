@@ -1,4 +1,7 @@
 import datetime
+from flask import Flask, request, jsonify
+app = Flask(__name__)
+
 """""
 1) Redefinir los bloques en los dias libres para que sean mas largos [CCOMPLETADO]
 2) Siempre se debe dejar un bloque de 1 hora par estudiar en la semana[COMPLETADO]
@@ -8,10 +11,41 @@ import datetime
 # CONFIGURACIÓN INICIAL
 # python moral_compass.py 
 # -------------------------------
+"""""
+Preguntas al usuario:
+1) Trabajas? (Si es asi, se definen los horarios ocupados)
+2) Que dias de la semana trabajas?
+3) De que hora a que hora trabajas en estos dias?
+4) Estudias? (Si es asi, se definen los horarios ocupados)
+5) Que dias de la semana estudias?
+6) De que hora a que hora estudias en estos dias?
+7) Haces ejercicio? (Si es asi, se definen los horarios ocupados)
+8) Que dias de la semana haces ejercicio?
+9) De que hora a que hora haces ejercicio en estos dias?
+10) Realizas alguna otra actividad de ocio? (Si es asi, se definen los horarios ocupados)
+# 11) Que dias de la semana realizas esta actividad?
+# 12) De que hora a que hora realizas esta actividad en estos dias?
 
-HORARIO_ESTUDIO = {"lunes": [8, 10], "martes": [8, 10], "miércoles": [8, 10], "jueves": [8, 10], "viernes": [8, 10]}
-HORARIO_TRABAJO = {"lunes": [10, 19], "martes": [10, 19], "miércoles": [10, 19], "jueves": [10, 19], "viernes": [10, 19]}
+"""
+
+
+def horarios_ocupados(dias: list[str], horas: list[int]):
+    """
+    Esta función recibe el nombre de la actividad, los días de la semana y las horas ocupadas.
+    Devuelve un diccionario con los horarios ocupados.
+    """
+    horarios = {}
+    for dia, hora in zip(dias, horas):
+        horarios[dia] = hora
+    return horarios
+
+
+
+#Horarios ocupados
+# Se definen los horarios ocupados para estudio, trabajo y tenis
+HORARIO_ESTUDIO_TRABAJO = {"lunes": [8, 19], "martes": [8, 19], "miércoles": [8, 19], "jueves": [8, 19], "viernes": [8, 19]}
 HORARIO_TENIS = {"martes": [19.5, 23], "jueves": [19.5, 23]}
+HORARIO_FIN_DE_SEMANA = {"sábado": [19, 23], "domingo": [19, 23]}
 
 
 # -------------------------------
@@ -67,16 +101,15 @@ def bloques_libres(dia, hora_now):
     # Se consideran horarios de estudio, trabajo y tenis
     # Si el día es sábado o domingo, se ignoran los horarios de estudio y trabajo
     ocupados = []
-    if dia in HORARIO_ESTUDIO:
-        ocupados.append(HORARIO_ESTUDIO[dia])
-    if dia in HORARIO_TRABAJO:
-        ocupados.append(HORARIO_TRABAJO[dia])
+    if dia in HORARIO_ESTUDIO_TRABAJO:
+        ocupados.append(HORARIO_ESTUDIO_TRABAJO[dia])
     if dia in HORARIO_TENIS:
         ocupados.append(HORARIO_TENIS[dia])
-
+    if dia in HORARIO_FIN_DE_SEMANA:
+        ocupados.append(HORARIO_FIN_DE_SEMANA[dia])
 # Si el dia no esta dentro de ninguno de los horarios, se considera que no hay ocupación
     inicio = 10.0
-    fin = 19.0
+    fin = 23.0
 
     for bloque in sorted(ocupados):
         if inicio < bloque[0]:
@@ -92,47 +125,53 @@ def bloques_libres(dia, hora_now):
 def duracion_bloque(b):
     #Quiero restar la hora actual menos la hora de inicio del bloque b[0] y multiplicar por 60 para obtener la duración en minutos
     ahora = datetime.datetime.now()
-    hora_actual = ahora.hour + ahora.minute / 60 
+    hora_actual = ahora.hour + ahora.minute / 60  # 19.01 # *(Para testear)
     final_bloque = b[1]
-    return int((final_bloque - hora_actual) * 60) 
+    inicio_bloque = b[0] if hora_actual < b[0] else hora_actual
+    return int((final_bloque - inicio_bloque) * 60) 
 
 
 # -------------------------------
 # GENERACIÓN DE TAREAS
 # -------------------------------
 
-def tareas_basicas():
+def tareas_basicas(data):
     dia_actual, _ = hora_actual()
     dia_actual = convertir_dia(dia_actual)
     tareas = []
-
-    res = input("¿Tienes resuelta la comida de esta noche? (s/n): ").lower()
+    
+    res = data.get("resuelveComida", "n").lower()
+    #res = input("¿Tienes resuelta la comida de esta noche? (s/n): ").lower()
     if res == "n":
-        ing = input("¿Ya tienes los ingredientes? (s/n): ").lower()
+        ing = data.get("tienesIngredientes", "n").lower()
+        #ing = input("¿Ya tienes los ingredientes? (s/n): ").lower()
         if ing == "n":
             tareas.append(Tarea("Ir al supermercado", urgencia=8, prioridad=7, duracion=30, tipo="necesidad"))
         tareas.append(Tarea("Cocinar", urgencia=6, prioridad=7, duracion=40, tipo="necesidad"))
 
-    examen = input("¿Tienes un examen o entrevista cercana? (s/n): ").lower()
+    examen = data.get("tienesExamen", "n").lower()
+   # examen = input("¿Tienes un examen o entrevista cercana? (s/n): ").lower()
     if examen == "s":
         tareas.append(Tarea("Estudiar / Preparar entrevista", urgencia=9, prioridad=10, duracion=120, tipo="obligación"))
     else:
         duracion_matematicas = 90 if (dia_actual == "sábado" or dia_actual == "domingo") else 60
         tareas.append(Tarea("Estudiar Matematicas / Programacion", urgencia=5, prioridad=6, duracion=duracion_matematicas, tipo="obligación"))
-    energia = int(input("¿Cuánta energía tienes ahora mismo? (0 a 10): "))
+    energia = data.get("energia", 5)  # Valor por defecto 5
+    #energia = int(input("¿Cuánta energía tienes ahora mismo? (0 a 10): "))
     if energia < 4:
         tareas.append(Tarea("Descansar / Siesta", urgencia=5, prioridad=8, duracion=30, tipo="personal"))
 
     
-
-    personal = input("¿Tienes alguna tarea personal pendiente? (Algun curso, aprender algo de programacion nuevo, etc.) (separa por coma): ")
+    personal = data.get("tareasPersonales", "n").lower()
+    #personal = input("¿Tienes alguna tarea personal pendiente? (Algun curso, aprender algo de programacion nuevo, etc.) (separa por coma): ")
     for personal in personal.split(","):
         personal = personal.strip()
         if personal:
             duracion_personal = 90 if (dia_actual == "sábado" or dia_actual == "domingo") else 45
             # Aumentar duración de tareas personales los sábados y domingos
             tareas.append(Tarea(personal, urgencia=4, prioridad=6, duracion=duracion_personal, tipo="personal"))
-    deseos = input("¿Qué te gustaría hacer hoy por placer? (separa por coma): ")
+    deseos = data.get("deseos", "n").lower()
+    #deseos = input("¿Qué te gustaría hacer hoy por placer? (separa por coma): ")
     for deseo in deseos.split(","):
         deseo = deseo.strip()
         if deseo:
@@ -140,9 +179,8 @@ def tareas_basicas():
             # Aumentar duración de deseos los sábados y domingos
             tareas.append(Tarea(deseo, urgencia=3, prioridad=5, duracion=duracion_deseo, tipo="deseo"))
 
-    # print("\nTareas generadas:")
-    # for tarea in tareas:
-    #     print(f" - {tarea}")
+    for tarea in tareas:
+        print(f" - {tarea}")
 
     return tareas
 
@@ -175,40 +213,78 @@ def planificar_tareas(tareas, bloques):
 # -------------------------------
 # MAIN
 # -------------------------------
-
+@app.route('/', methods=["GET"])
 def main():
+    welcome = {
+        "status": "success",
+        "today": "",
+        "message_time": "",
+        "message_time2": "",
+        "tiempo_restante": "",
+    }
     dia_raw, hora_now = hora_actual()
     dia_raw = dia_raw.lower()
-    dia = "saturday"  # convertir_dia(dia_raw)
-    
+    dia = convertir_dia(dia_raw) # "domingo" #
+    #hora_now = 10.10  # Hora actual en formato decimal (19:01)
+
     now  = datetime.datetime.now()
     now_time = f"{now.hour:02}:{now.minute:02}"  # Formatear como HH:MM
-    print(f"\n📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}")
+    print(f"\n📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}") #{hora_now} (para testear)
+    welcome['today'] = f"📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}"
     bloques = bloques_libres(dia, hora_now)
-
     if not bloques:
         print("No tienes tiempo libre disponible hoy 💤")
-        return
+        welcome['message_time'] =f"No tienes tiempo libre disponible hoy 💤"
+        return jsonify(welcome)
+
 
     print(f"🕒 Bloques libres detectados:")
+    welcome['message_time'] = f"🕒 Bloques libres detectados:"
     for b in bloques:
         ahora = datetime.datetime.now()
-        horita = f"{ahora.hour:02}:{ahora.minute:02}"  # Formatear como HH:MM
+        horita = f"{ahora.hour:02}:{ahora.minute:02}"  # Formatear como HH:MM # "19:01"# (para testear)
+        horita_decimal = hora_actual_decimal() # hora_now # (para testear)
         print(f" - De {b[0]:.2f} a {b[1]:.2f} hs")
-        print(f"Tiempo restante del bloque ⚠️  De {horita} a {b[1]:.2f} hs ({duracion_bloque(b)} min)")
+        welcome['message_time2'] = f" - De {b[0]:.2f} a {b[1]:.2f} hs"
+    print(f"Tiempo restante del bloque ⚠️  De {horita if horita_decimal > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)")
+    welcome['tiempo_restante'] = f"⚠️ De {hora_now if hora_now > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)"
+    return jsonify(welcome)
 
-    tareas = tareas_basicas()
+@app.route('/respuesta', methods=["POST"])
+def respuesta():
+    dia_raw, hora_now = hora_actual()
+    dia_raw = dia_raw.lower()
+    dia = convertir_dia(dia_raw) # "domingo" #
+    #hora_now = 10.10  # Hora actual en formato decimal (19:01)
+    
+    bloques = bloques_libres(dia, hora_now)
+    
+    data = request.get_json()
+    
+    respuestas = {
+        "message_tareas": "",
+        "message_plan_4_today": "",
+        "plan_today": []   
+        }
+    tareas = tareas_basicas(data)
     if not tareas:
         print("No se han registrado tareas.")
-        return
+        respuestas['message_tareas'] = "No se han registrado tareas."
+        return jsonify(respuestas)
 
     plan = planificar_tareas(tareas, bloques)
 
     print("\n✅ Plan sugerido para hoy:")
+    respuestas['message_plan_4_today'] = "✅ Plan sugerido para hoy:"
     for hora, tarea in plan:
         h = int(hora)
         m = int((hora - h) * 60)
         print(f" - {h:02}:{m:02} → {tarea.nombre} ({tarea.duracion} min)")
+        respuestas['plan_today'].append(f" - {h:02}:{m:02} → {tarea.nombre} ({tarea.duracion} min)") 
+    return jsonify(respuestas)
 
 if __name__ == "__main__":
-    main()
+    # main()
+    app.run(port=5000, debug=True)  # Iniciar la aplicación Flask en el puerto 5000
+
+
