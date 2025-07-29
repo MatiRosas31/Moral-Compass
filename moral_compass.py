@@ -130,7 +130,22 @@ def duracion_bloque(b):
     inicio_bloque = b[0] if hora_actual < b[0] else hora_actual
     return int((final_bloque - inicio_bloque) * 60) 
 
+def porcentaje_bloque_disponible(b):
+    ahora = datetime.datetime.now()
+    hora_actual = ahora.hour + ahora.minute / 60
 
+    inicio_bloque = b[0]
+    fin_bloque = b[1]
+    duracion_total = fin_bloque - inicio_bloque
+
+    if hora_actual >= fin_bloque:
+        return 0  # Ya terminó el bloque
+    elif hora_actual <= inicio_bloque:
+        return 100  # Todavía no empezó, está todo disponible
+
+    restante = fin_bloque - hora_actual
+    porcentaje = (restante / duracion_total) * 100
+    return round(porcentaje)
 # -------------------------------
 # GENERACIÓN DE TAREAS
 # -------------------------------
@@ -221,6 +236,7 @@ def main():
         "message_time": "",
         "message_time2": "",
         "tiempo_restante": "",
+        "tiempo_restante_porcentaje": ""
     }
     dia_raw, hora_now = hora_actual()
     dia_raw = dia_raw.lower()
@@ -247,7 +263,9 @@ def main():
         print(f" - De {b[0]:.2f} a {b[1]:.2f} hs")
         welcome['message_time2'] = f" - De {b[0]:.2f} a {b[1]:.2f} hs"
     print(f"Tiempo restante del bloque ⚠️  De {horita if horita_decimal > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)")
-    welcome['tiempo_restante'] = f"⚠️ De {hora_now if hora_now > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)"
+    welcome['tiempo_restante'] = f"De {horita if horita_decimal > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)"
+    print(f"Porcentaje de tiempo restante del bloque ⚠️: {porcentaje_bloque_disponible(b)}%")
+    welcome['tiempo_restante_porcentaje'] = f"{porcentaje_bloque_disponible(b)}"
     return jsonify(welcome)
 
 @app.route('/respuesta', methods=["POST"])
