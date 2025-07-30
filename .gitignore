@@ -1,0 +1,3 @@
+*.log
+.venv/
+front/node_modules/
