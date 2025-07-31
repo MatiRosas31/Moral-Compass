@@ -1,11 +1,14 @@
 import datetime
 from flask import Flask, request, jsonify
-from flask_cors import CORS
-import os
+from flask_cors import CORS # Importa Flask-CORS
+import os # Importa el módulo os para acceder a variables de entorno
+import pytz # Importa la biblioteca pytz
 
 app = Flask(__name__)
+CORS(app) # Habilita CORS para todas las rutas de tu aplicación
 
-CORS(app)  # Permitir solicitudes CORS
+# Define el huso horario de Uruguay
+URUGUAY_TIMEZONE = pytz.timezone('America/Montevideo')
 
 """""
 1) Redefinir los bloques en los dias libres para que sean mas largos [CCOMPLETADO]
@@ -77,14 +80,18 @@ class Tarea:
 # -------------------------------
 
 def hora_actual():
-    ahora = datetime.datetime.now()
-    return ahora.strftime('%A').lower(), ahora.hour + ahora.minute / 60
+    # Obtiene la hora actual en el huso horario de Uruguay
+    ahora_utc = datetime.datetime.now(pytz.utc)
+    ahora_uruguay = ahora_utc.astimezone(URUGUAY_TIMEZONE)
+    return ahora_uruguay.strftime('%A').lower(), ahora_uruguay.hour + ahora_uruguay.minute / 60
     # devuelve: wednesday
-    #            14.75
+    #           14.75
 
 def hora_actual_decimal():
-    ahora = datetime.datetime.now()
-    return ahora.hour + ahora.minute / 60  # Hora actual en formato decimal
+    # Obtiene la hora actual en el huso horario de Uruguay
+    ahora_utc = datetime.datetime.now(pytz.utc)
+    ahora_uruguay = ahora_utc.astimezone(URUGUAY_TIMEZONE)
+    return ahora_uruguay.hour + ahora_uruguay.minute / 60  # Hora actual en formato decimal
 
 def convertir_dia(dia):
     mapa = {
@@ -128,16 +135,19 @@ def bloques_libres(dia, hora_now):
 
 
 def duracion_bloque(b):
-    #Quiero restar la hora actual menos la hora de inicio del bloque b[0] y multiplicar por 60 para obtener la duración en minutos
-    ahora = datetime.datetime.now()
-    hora_actual = ahora.hour + ahora.minute / 60  # 19.01 # *(Para testear)
+    # Obtiene la hora actual en el huso horario de Uruguay
+    ahora_utc = datetime.datetime.now(pytz.utc)
+    ahora_uruguay = ahora_utc.astimezone(URUGUAY_TIMEZONE)
+    hora_actual = ahora_uruguay.hour + ahora_uruguay.minute / 60  # 19.01 # *(Para testear)
     final_bloque = b[1]
     inicio_bloque = b[0] if hora_actual < b[0] else hora_actual
     return int((final_bloque - inicio_bloque) * 60) 
 
 def porcentaje_bloque_disponible(b):
-    ahora = datetime.datetime.now()
-    hora_actual = ahora.hour + ahora.minute / 60
+    # Obtiene la hora actual en el huso horario de Uruguay
+    ahora_utc = datetime.datetime.now(pytz.utc)
+    ahora_uruguay = ahora_utc.astimezone(URUGUAY_TIMEZONE)
+    hora_actual = ahora_uruguay.hour + ahora_uruguay.minute / 60
 
     inicio_bloque = b[0]
     fin_bloque = b[1]
@@ -245,12 +255,14 @@ def main():
     }
     dia_raw, hora_now = hora_actual()
     dia_raw = dia_raw.lower()
-    dia = convertir_dia(dia_raw) # "domingo" #
-    #hora_now = 10.10  # Hora actual en formato decimal (19:01)
-
-    now  = datetime.datetime.now()
-    now_time = f"{now.hour:02}:{now.minute:02}"  # Formatear como HH:MM
-    print(f"\n📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}") #{hora_now} (para testear)
+    dia = convertir_dia(dia_raw)
+    
+    # Obtiene la hora actual en el huso horario de Uruguay para mostrar
+    ahora_utc = datetime.datetime.now(pytz.utc)
+    now = ahora_utc.astimezone(URUGUAY_TIMEZONE)
+    now_time = f"{now.hour:02}:{now.minute:02}"
+    
+    print(f"\n📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}")
     welcome['today'] = f"📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}"
     bloques = bloques_libres(dia, hora_now)
     if not bloques:
@@ -258,16 +270,17 @@ def main():
         welcome['message_time'] =f"No tienes tiempo libre disponible hoy 💤"
         return jsonify(welcome)
 
-
     print(f"🕒 Bloques libres detectados:")
     welcome['message_time'] = f"🕒 Bloques libres detectados:"
     for b in bloques:
-        ahora = datetime.datetime.now()
-        horita = f"{ahora.hour:02}:{ahora.minute:02}"  # Formatear como HH:MM # "19:01"# (para testear)
-        horita_decimal = hora_actual_decimal() # hora_now # (para testear)
+        # Obtiene la hora actual en el huso horario de Uruguay para mostrar
+        ahora_utc_b = datetime.datetime.now(pytz.utc)
+        ahora_uruguay_b = ahora_utc_b.astimezone(URUGUAY_TIMEZONE)
+        horita = f"{ahora_uruguay_b.hour:02}:{ahora_uruguay_b.minute:02}"
+        horita_decimal = hora_actual_decimal()
         print(f" - De {b[0]:.2f} a {b[1]:.2f} hs")
         welcome['message_time2'] = f" - De {b[0]:.2f} a {b[1]:.2f} hs"
-    print(f"Tiempo restante del bloque ⚠️  De {horita if horita_decimal > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)")
+    print(f"Tiempo restante del bloque ⚠️  De {horita if horita_decimal > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)")
     welcome['tiempo_restante'] = f"De {horita if horita_decimal > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)"
     print(f"Porcentaje de tiempo restante del bloque ⚠️: {porcentaje_bloque_disponible(b)}%")
     welcome['tiempo_restante_porcentaje'] = f"{porcentaje_bloque_disponible(b)}"
@@ -277,8 +290,7 @@ def main():
 def respuesta():
     dia_raw, hora_now = hora_actual()
     dia_raw = dia_raw.lower()
-    dia = convertir_dia(dia_raw) # "domingo" #
-    #hora_now = 10.10  # Hora actual en formato decimal (19:01)
+    dia = convertir_dia(dia_raw)
     
     bloques = bloques_libres(dia, hora_now)
     
@@ -287,7 +299,7 @@ def respuesta():
     respuestas = {
         "message_tareas": "",
         "message_plan_4_today": "",
-        "plan_today": []   
+        "plan_today": []  
         }
     tareas = tareas_basicas(data)
     if not tareas:
@@ -307,8 +319,6 @@ def respuesta():
     return jsonify(respuestas)
 
 if __name__ == "__main__":
-    # main()
+    # Obtiene el puerto de la variable de entorno PORT, o usa 5000 como fallback
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)  # Iniciar la aplicación Flask en el puerto 5000
-
-
+    app.run(host='0.0.0.0', port=port, debug=False) 
