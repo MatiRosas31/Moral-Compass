@@ -307,6 +307,7 @@ def respuesta():
 
 if __name__ == "__main__":
     # main()
-    app.run(port=5000, debug=True)  # Iniciar la aplicación Flask en el puerto 5000
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)  # Iniciar la aplicación Flask en el puerto 5000
 
 

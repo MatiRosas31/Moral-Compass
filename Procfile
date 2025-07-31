@@ -1,0 +1,1 @@
+web: gunicorn moral_compass:app --bind 0.0.0.0:$PORT
