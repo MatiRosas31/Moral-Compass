@@ -1,6 +1,10 @@
 import datetime
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 app = Flask(__name__)
+
+CORS(app)  # Permitir solicitudes CORS
 
 """""
 1) Redefinir los bloques en los dias libres para que sean mas largos [CCOMPLETADO]
