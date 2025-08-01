@@ -170,18 +170,18 @@ def tareas_basicas(data):
     dia_actual = convertir_dia(dia_actual)
     tareas = []
     
-    res = data.get("resuelveComida", "n").lower()
+    res = data.get("resuelveComida", "null").lower()
     #res = input("¿Tienes resuelta la comida de esta noche? (s/n): ").lower()
-    if res == "n":
-        ing = data.get("tienesIngredientes", "n").lower()
+    if res == "no":
+        ing = data.get("tienesIngredientes", "null").lower()
         #ing = input("¿Ya tienes los ingredientes? (s/n): ").lower()
-        if ing == "n":
+        if ing == "no":
             tareas.append(Tarea("Ir al supermercado", urgencia=8, prioridad=7, duracion=30, tipo="necesidad"))
         tareas.append(Tarea("Cocinar", urgencia=6, prioridad=7, duracion=40, tipo="necesidad"))
 
-    examen = data.get("tienesExamen", "n").lower()
+    examen = data.get("tienesExamen", "null").lower()
    # examen = input("¿Tienes un examen o entrevista cercana? (s/n): ").lower()
-    if examen == "s":
+    if examen == "si":
         tareas.append(Tarea("Estudiar / Preparar entrevista", urgencia=9, prioridad=10, duracion=120, tipo="obligación"))
     else:
         duracion_matematicas = 90 if (dia_actual == "sábado" or dia_actual == "domingo") else 60
@@ -192,7 +192,7 @@ def tareas_basicas(data):
         tareas.append(Tarea("Descansar / Siesta", urgencia=5, prioridad=8, duracion=30, tipo="personal"))
 
     
-    personal = data.get("tareasPersonales", "n").lower()
+    personal = data.get("tareasPersonales", "null").lower()
     #personal = input("¿Tienes alguna tarea personal pendiente? (Algun curso, aprender algo de programacion nuevo, etc.) (separa por coma): ")
     for personal in personal.split(","):
         personal = personal.strip()
@@ -200,7 +200,7 @@ def tareas_basicas(data):
             duracion_personal = 90 if (dia_actual == "sábado" or dia_actual == "domingo") else 45
             # Aumentar duración de tareas personales los sábados y domingos
             tareas.append(Tarea(personal, urgencia=4, prioridad=6, duracion=duracion_personal, tipo="personal"))
-    deseos = data.get("deseos", "n").lower()
+    deseos = data.get("deseos", "null").lower()
     #deseos = input("¿Qué te gustaría hacer hoy por placer? (separa por coma): ")
     for deseo in deseos.split(","):
         deseo = deseo.strip()
