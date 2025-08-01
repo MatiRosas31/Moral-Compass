@@ -8,94 +8,64 @@
       onload="this.rel='stylesheet'"
       href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
     />
-
     <title>Moral Compass</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">
     </script>
     <script> src="main.js"</script>
   </head>
-  <body>
-    <div class="relative flex size-full min-h-screen flex-col bg-white justify-between group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+  <body class="bg-gray-900 text-white font-sans min-h-screen p-6">
+    <div class="relative flex size-full min-h-screen flex-col justify-between group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+      
+      <!-- HEADER -->
       <div>
-        <div class="flex items-center bg-white p-4 pb-2 justify-between">
-          <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pl-12">Bienvenido, Matias</h2>
-          <div class="flex w-12 items-center justify-end">
-            <button
-            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#111418] gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0"
-            >
-            <div class="text-[#111418]" data-icon="Gear" data-size="24px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
-                ></path>
-              </svg>
-            </div>
-          </button>
+        <div class="flex items-center  p-4 pb-2 justify-between">
+          <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Bienvenido, Matias</h2>
         </div>
       </div>
-      <h2 class="today text-[#111418] tracking-light text-[28px] font-bold leading-tight px-4 text-left pb-3 pt-5">Today, 10:30 AM</h2>
-      <p class="youhave text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4">You have 3 hours and 30 minutes of free time today</p>
-      <p class="detalatalhora text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4">You have 3 hours and 30 minutes of free time today</p>
+  
+      <!-- CONTENIDO PRINCIPAL -->
+      <h2 class="today text-white tracking-light text-[28px] font-bold leading-tight px-4 text-left pb-3 pt-5">Today, 10:30 AM</h2>
+      <p class="youhave text-[#d1d5db] text-base font-normal leading-normal pb-3 pt-1 px-4">You have 3 hours and 30 minutes of free time today</p>
+      <p class="detalatalhora text-[#d1d5db] text-base font-normal leading-normal pb-3 pt-1 px-4">You have 3 hours and 30 minutes of free time today</p>
       <div class="flex flex-col gap-3 p-4">
-        <div class="flex gap-6 justify-between"><p class="text-[#111418] text-base font-medium leading-normal">
-          Tiempo restante del bloque ⚠️:</p></div>
-        <div class="rounded bg-[#dbe0e6]"><div class="barrita h-2 rounded bg-[#111418]" style="width: 90%;"></div></div>
-        <p class="tiemporestante text-[#60758a] text-sm font-normal leading-normal">3h 30m</p>
+        <div class="flex gap-6 justify-between">
+          <p class="text-white text-base font-medium leading-normal">Tiempo restante del bloque ⚠️: <span id="percentage"></span></p>
+        </div>
+        <div class="rounded bg-[#374151]"><div class="barrita h-2 rounded bg-white" style="width: 90%;"></div></div>
+        <p class="tiemporestante text-[#9ca3af] text-sm font-normal leading-normal">3h 30m</p>
       </div>
+  
+      <!-- BOTÓN -->
+      <div class="flex justify-center px-4 py-3">
+        <button id="ir-a-preguntas" class="startplanning h-12 px-5 w-full max-w-[480px] bg-green-500 hover:bg-green-400 text-white text-base font-bold rounded-lg truncate">
+          Start Planning
+        </button>
+      </div>
+  
+    <!-- NAV BAR CENTRADO -->
+<div class="flex justify-center gap-5 border-t border-[#1f2937] px-4 pt-2">
+  <!-- Home -->
+  <a class="just flex flex-col items-center justify-end gap-1 text-white" href="#">
+    <div class="flex h-8 items-center justify-center" data-icon="House">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+      </svg>
     </div>
-    <div class="flex justify-center px-4 py-3">
-      <button
-        class="h-12 px-5 w-full max-w-[480px] bg-[#0c7ff2] text-white text-base font-bold rounded-lg truncate"
-      >
-        Start Planning
-      </button>
+    <p class="text-xs font-medium tracking-[0.015em]">Home</p>
+  </a>
+
+  <!-- Tasks -->
+  <a class="just flex flex-col items-center justify-end gap-1 text-[#9ca3af]" href="#">
+    <div class="flex h-6 items-center justify-center" data-icon="ListBullets">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+        <path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"></path>
+      </svg>
     </div>
-    <div class="flex gap-2 border-t border-[#f0f2f5] bg-white px-4 pb-3 pt-2">
-      <a class="just flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-[#111418]" href="#">
-        <div class="text-[#111418] flex h-8 items-center justify-center" data-icon="House" data-size="24px" data-weight="fill">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-            <path
-            d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"
-            ></path>
-          </svg>
-        </div>
-        <p class="text-[#111418] text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
-      </a>
-      <a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#60758a]" href="#">
-        <div class="text-[#60758a] flex h-8 items-center justify-center" data-icon="ListBullets" data-size="24px" data-weight="regular">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-            <path
-            d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"
-            ></path>
-          </svg>
-        </div>
-        <p class="text-[#60758a] text-xs font-medium leading-normal tracking-[0.015em]">Tasks</p>
-      </a>
-      <a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#60758a]" href="#">
-        <div class="text-[#60758a] flex h-8 items-center justify-center" data-icon="Calendar" data-size="24px" data-weight="regular">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-            <path
-            d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-96-88v64a8,8,0,0,1-16,0V132.94l-4.42,2.22a8,8,0,0,1-7.16-14.32l16-8A8,8,0,0,1,112,120Zm59.16,30.45L152,176h16a8,8,0,0,1,0,16H136a8,8,0,0,1-6.4-12.8l28.78-38.37A8,8,0,1,0,145.07,132a8,8,0,1,1-13.85-8A24,24,0,0,1,176,136,23.76,23.76,0,0,1,171.16,150.45Z"
-            ></path>
-          </svg>
-        </div>
-        <p class="text-[#60758a] text-xs font-medium leading-normal tracking-[0.015em]">Calendar</p>
-      </a>
-      <a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#60758a]" href="#">
-        <div class="text-[#60758a] flex h-8 items-center justify-center" data-icon="Gear" data-size="24px" data-weight="regular">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-            <path
-            d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
-            ></path>
-          </svg>
-        </div>
-        <p class="text-[#60758a] text-xs font-medium leading-normal tracking-[0.015em]">Settings</p>
-      </a>
-    </div>
-    <div class="h-5 bg-white"></div>
+    <p class="text-xs font-medium tracking-[0.015em]">Tasks</p>
+  </a>
   </div>
 </div>
-<script src="renderer.js"></script>
-</body>
+    <script src="renderer.js"></script>
+  </body>  
 </html>

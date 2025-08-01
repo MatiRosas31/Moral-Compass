@@ -1,16 +1,41 @@
 {
-  "name": "front",
+  "name": "moral-compass",
   "version": "1.0.0",
+  "description": "Brújula moral para organizar tu día",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "build": {
+    "appId": "com.mark.moralcompass",
+    "productName": "Moral Compass",
+    "copyright": "Copyright © 2025 Mark Griffins",
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "icon": "front/assets/moralcompass_icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
   "devDependencies": {
-    "electron": "^37.2.4"
+    "electron": "^37.2.4",
+    "electron-builder": "^26.0.0"
   }
 }

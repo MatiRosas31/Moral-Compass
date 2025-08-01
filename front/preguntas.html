@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestionar Preguntas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen p-6">
+
+<div id ="max_container" class="max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Comencemos</h1>
+
+    <form id="formulario" class="space-y-6">
+
+      <!-- Pregunta 1 -->
+      <div>
+        <label class="block mb-2 font-medium">¿Tienes resuelta la comida de esta noche?</label>
+        <select id="comidaResuelta" class="w-full rounded p-2 text-black">
+          <option value="">Selecciona una opción</option>
+          <option value="si">Si</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <!-- Condicionales -->
+      <div id="preguntasCondicionales" class="space-y-6 hidden">
+        <div>
+          <label class="block mb-2 font-medium">¿Ya tienes los ingredientes?</label>
+          <select  id="ingredientesResueltos"  class="w-full rounded p-2 text-black">
+            <option value="">Selecciona una opción</option>
+            <option value="si">Si</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+    </div>
+
+      <!-- Preguntas siempre visibles -->
+       
+      <div>
+        <label class="block mb-2 font-medium">¿Tienes un examen o entrevista cercana?</label>
+        <select id="examenEntrevista"   class="w-full rounded p-2 text-black">
+          <option value="">Selecciona una opción</option>
+          <option value="si">Si</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block mb-2 font-medium">¿Cuánta energía tienes ahora mismo? (1 a 10)</label>
+        <input type="range" min="1" max="10" value="5" class="w-full" id="energiaSlider">
+        <p class="mt-1 text-sm text-gray-300">Nivel: <span id="valorEnergia">5</span></p>
+      </div>
+      
+      <div>
+        <label class="block mb-2 font-medium">¿Tienes alguna tarea personal pendiente? (Curso, programación, etc.)</label>
+        <input id="tarea_personal" type="text" class="w-full rounded p-2 text-black" placeholder="Separar por coma">
+      </div>
+      <div>
+        <label class="block mb-2 font-medium">¿Qué te gustaría hacer hoy por placer?</label>
+        <input id="placer" type="text" class="w-full rounded p-2 text-black" placeholder="Separar por coma">
+      </div>
+  
+      <button type="submit" class="w-full bg-green-500 hover:bg-green-400 text-white my-4 py-2 rounded">
+        Guardar respuestas
+      </button>
+    </form>
+  </div>
+  <script>
+    const comidaSelect = document.getElementById('comidaResuelta');
+    const preguntasCondicionales = document.getElementById('preguntasCondicionales');
+    const energiaSlider = document.getElementById('energiaSlider');
+    const valorEnergia = document.getElementById('valorEnergia');
+
+    comidaSelect.addEventListener('change', () => {
+      preguntasCondicionales.classList.toggle('hidden', comidaSelect.value !== 'no');
+    });
+
+    energiaSlider.addEventListener('input', () => {
+      valorEnergia.textContent = energiaSlider.value;
+    });
+  </script>
+  <script src="preguntas_renderer.js"></script>
+</body>
+</html>
