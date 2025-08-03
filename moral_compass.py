@@ -53,7 +53,7 @@ def horarios_ocupados(dias: list[str], horas: list[int]):
 # Se definen los horarios ocupados para estudio, trabajo y tenis
 HORARIO_ESTUDIO_TRABAJO = {"lunes": [8, 19], "martes": [8, 19], "miércoles": [8, 19], "jueves": [8, 19], "viernes": [8, 19]}
 HORARIO_TENIS = {"martes": [19.5, 23], "jueves": [19.5, 23]}
-HORARIO_FIN_DE_SEMANA = {"sábado": [22, 23], "domingo": [19, 23]}
+HORARIO_FIN_DE_SEMANA = {"sábado": [22, 23], "domingo": [20, 23]}
 
 
 # -------------------------------
