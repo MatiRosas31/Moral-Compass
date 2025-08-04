@@ -170,23 +170,23 @@ def tareas_basicas(data):
     dia_actual = convertir_dia(dia_actual)
     tareas = []
     
-    res = data.get("resuelveComida", "null").lower()
+    res = data.get("comidaResuelta", "null").lower()
     #res = input("¿Tienes resuelta la comida de esta noche? (s/n): ").lower()
     if res == "no":
-        ing = data.get("tienesIngredientes", "null").lower()
+        ing = data.get("ingredientesResueltos", "null").lower()
         #ing = input("¿Ya tienes los ingredientes? (s/n): ").lower()
         if ing == "no":
             tareas.append(Tarea("Ir al supermercado", urgencia=8, prioridad=7, duracion=30, tipo="necesidad"))
         tareas.append(Tarea("Cocinar", urgencia=6, prioridad=7, duracion=40, tipo="necesidad"))
 
-    examen = data.get("tienesExamen", "null").lower()
+    examen = data.get("examenEntrevista", "null").lower()
    # examen = input("¿Tienes un examen o entrevista cercana? (s/n): ").lower()
     if examen == "si":
         tareas.append(Tarea("Estudiar / Preparar entrevista", urgencia=9, prioridad=10, duracion=120, tipo="obligación"))
     else:
         duracion_matematicas = 90 if (dia_actual == "sábado" or dia_actual == "domingo") else 60
         tareas.append(Tarea("Estudiar Matematicas / Programacion", urgencia=5, prioridad=6, duracion=duracion_matematicas, tipo="obligación"))
-    energia = data.get("energia", 5)  # Valor por defecto 5
+    energia = int(data.get("energiaSlider", 5))  # Valor por defecto 5
     #energia = int(input("¿Cuánta energía tienes ahora mismo? (0 a 10): "))
     if energia < 4:
         tareas.append(Tarea("Descansar / Siesta", urgencia=5, prioridad=8, duracion=30, tipo="personal"))
