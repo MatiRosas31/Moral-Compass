@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Moral Compass - Configuración inicial" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&family=Inter:wght@400;500;600;700;900" />
+    <title>Moral Compass — Configuración</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+      * { font-family: 'Inter', sans-serif; }
+
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeOutDown {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-20px); }
+      }
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes progressPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.85; }
+      }
+
+      .animate-fade-in-up { animation: fadeInUp 0.5s ease-out both; }
+      .animate-slide-in { animation: slideInRight 0.4s ease-out both; }
+
+      .glass-card {
+        background: rgba(31, 41, 55, 0.6);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(75, 85, 99, 0.4);
+      }
+
+      .day-btn {
+        transition: all 0.25s ease;
+        background: rgba(17, 24, 39, 0.7);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+      }
+      .day-btn:hover { border-color: rgba(34, 197, 94, 0.5); transform: translateY(-1px); }
+      .day-btn.selected {
+        background: rgba(34, 197, 94, 0.2);
+        border-color: #22c55e;
+        color: #4ade80;
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
+      }
+
+      .hour-btn {
+        transition: all 0.2s ease;
+        background: rgba(17, 24, 39, 0.5);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        font-size: 0.75rem;
+      }
+      .hour-btn:hover { border-color: rgba(34, 197, 94, 0.4); }
+      .hour-btn.selected {
+        background: rgba(34, 197, 94, 0.25);
+        border-color: #22c55e;
+        color: #4ade80;
+      }
+
+      .choice-btn {
+        transition: all 0.3s ease;
+        background: rgba(17, 24, 39, 0.7);
+        border: 2px solid rgba(75, 85, 99, 0.4);
+      }
+      .choice-btn:hover { border-color: rgba(34, 197, 94, 0.5); transform: translateY(-2px); }
+      .choice-btn.selected {
+        background: rgba(34, 197, 94, 0.15);
+        border-color: #22c55e;
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+      }
+
+      .activity-card {
+        transition: all 0.3s ease;
+        background: rgba(17, 24, 39, 0.7);
+        border: 2px solid rgba(75, 85, 99, 0.4);
+      }
+      .activity-card:hover { border-color: rgba(34, 197, 94, 0.4); transform: translateY(-2px); }
+      .activity-card.selected {
+        background: rgba(34, 197, 94, 0.15);
+        border-color: #22c55e;
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #22c55e, #059669);
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #16a34a, #047857);
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+      }
+      .btn-primary:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .btn-secondary {
+        background: rgba(75, 85, 99, 0.3);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        transition: all 0.3s ease;
+      }
+      .btn-secondary:hover {
+        background: rgba(75, 85, 99, 0.5);
+      }
+
+      .progress-bar-fill {
+        transition: width 0.5s ease;
+        background: linear-gradient(90deg, #22c55e, #10b981);
+      }
+
+      .bg-grid {
+        background-image: 
+          radial-gradient(circle at 20% 50%, rgba(34, 197, 94, 0.04) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+      }
+
+      .slider-green::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        background: #22c55e;
+        cursor: pointer;
+        box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+      }
+      .slider-green::-webkit-slider-runnable-track {
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(75, 85, 99, 0.5);
+      }
+      .slider-green {
+        -webkit-appearance: none;
+        width: 100%;
+        background: transparent;
+      }
+
+      .step-container {
+        display: none;
+      }
+      .step-container.active {
+        display: block;
+        animation: fadeInUp 0.5s ease-out both;
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: rgba(75, 85, 99, 0.5);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      .toggle-switch.active {
+        background: #22c55e;
+      }
+      .toggle-switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.3s;
+      }
+      .toggle-switch.active::after {
+        transform: translateX(20px);
+      }
+
+      .tab-btn {
+        transition: all 0.2s ease;
+        border-bottom: 2px solid transparent;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+      }
+      .tab-btn:hover { color: #d1d5db; }
+      .tab-btn.active {
+        color: #4ade80;
+        border-bottom-color: #22c55e;
+      }
+
+      .spinner {
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        animation: spin 0.6s linear infinite;
+        display: inline-block;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white min-h-screen bg-grid">
+    
+    <div class="max-w-lg mx-auto px-4 py-8">
+      <!-- Progress Bar -->
+      <div class="mb-8 animate-fade-in-up">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 font-medium">Configuración inicial</span>
+          <span id="step-indicator" class="text-xs text-green-400 font-semibold">Paso 1 de 5</span>
+        </div>
+        <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+          <div id="progress-bar" class="progress-bar-fill h-full rounded-full" style="width: 20%"></div>
+        </div>
+      </div>
+
+      <!-- ==================== STEP 1: Days ==================== -->
+      <div id="step-1" class="step-container active">
+        <div class="glass-card rounded-2xl p-6 mb-6">
+          <h2 class="text-xl font-bold text-white mb-2">¿Qué días de la semana estás libre para enfocarte en una actividad?</h2>
+          <p class="text-gray-400 text-sm mb-6">No importa si trabajás o estudiás esos días, siempre que tengas algo de tiempo fuera de esas actividades</p>
+          
+          <div id="days-grid" class="grid grid-cols-7 gap-2">
+            <!-- Generated by JS -->
+          </div>
+          <p id="days-error" class="text-red-400 text-xs mt-3 hidden">Seleccioná al menos un día</p>
+        </div>
+        <button id="btn-step-1" class="btn-primary w-full py-3 rounded-xl text-white font-semibold text-sm" disabled>
+          Siguiente
+        </button>
+      </div>
+
+      <!-- ==================== STEP 2: Time Slots ==================== -->
+      <div id="step-2" class="step-container">
+        <div class="glass-card rounded-2xl p-6 mb-6">
+          <h2 class="text-xl font-bold text-white mb-2">Seleccioná los horarios disponibles</h2>
+          <p class="text-gray-400 text-sm mb-5">Marcá las horas en las que podés enfocarte</p>
+
+          <!-- Toggle -->
+          <div class="flex items-center gap-3 mb-5">
+            <div id="same-schedule-toggle" class="toggle-switch active"></div>
+            <span id="toggle-label" class="text-sm text-gray-300">Mismo horario para todos los días</span>
+          </div>
+
+          <!-- Tabs for per-day mode -->
+          <div id="day-tabs" class="hidden flex flex-wrap gap-1 mb-4 border-b border-gray-700/50 pb-2">
+            <!-- Generated by JS -->
+          </div>
+
+          <!-- Time Grid Container -->
+          <div id="time-grid-container">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button id="btn-step-2-back" class="btn-secondary flex-1 py-3 rounded-xl text-white font-medium text-sm">Atrás</button>
+          <button id="btn-step-2" class="btn-primary flex-[2] py-3 rounded-xl text-white font-semibold text-sm">Siguiente</button>
+        </div>
+      </div>
+
+      <!-- ==================== STEP 3: Grocery ==================== -->
+      <div id="step-3" class="step-container">
+        <div class="glass-card rounded-2xl p-6 mb-6">
+          <h2 class="text-xl font-bold text-white mb-2">¿Es importante para vos parar a hacer las compras y cocinar dentro de este horario?</h2>
+          <p class="text-gray-400 text-sm mb-6">Esto nos ayuda a planificar mejor tu tiempo</p>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <button class="grocery-btn choice-btn rounded-xl py-6 text-center" data-value="true">
+              <div class="text-3xl mb-2">🛒</div>
+              <span class="text-base font-semibold">Sí</span>
+            </button>
+            <button class="grocery-btn choice-btn rounded-xl py-6 text-center" data-value="false">
+              <div class="text-3xl mb-2">✨</div>
+              <span class="text-base font-semibold">No</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button id="btn-step-3-back" class="btn-secondary flex-1 py-3 rounded-xl text-white font-medium text-sm">Atrás</button>
+          <button id="btn-step-3" class="btn-primary flex-[2] py-3 rounded-xl text-white font-semibold text-sm" disabled>Siguiente</button>
+        </div>
+      </div>
+
+      <!-- ==================== STEP 4: Activities ==================== -->
+      <div id="step-4" class="step-container">
+        <div class="glass-card rounded-2xl p-6 mb-6">
+          <h2 class="text-xl font-bold text-white mb-2">¿Tenés alguna actividad en la que quieras enfocarte todos los días?</h2>
+          <p class="text-gray-400 text-sm mb-6">Seleccioná hasta 2 actividades</p>
+          
+          <div id="activities-grid" class="grid grid-cols-2 gap-3">
+            <!-- Generated by JS -->
+          </div>
+
+          <!-- Custom activity input -->
+          <div id="custom-activity-input" class="hidden mt-4">
+            <input type="text" id="custom-activity-name" 
+              class="w-full rounded-xl px-4 py-3 text-white placeholder-gray-500 text-sm"
+              style="background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(75, 85, 99, 0.5);"
+              placeholder="Nombre de la actividad..." />
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button id="btn-step-4-back" class="btn-secondary flex-1 py-3 rounded-xl text-white font-medium text-sm">Atrás</button>
+          <button id="btn-step-4" class="btn-primary flex-[2] py-3 rounded-xl text-white font-semibold text-sm" disabled>Siguiente</button>
+        </div>
+      </div>
+
+      <!-- ==================== STEP 5: Priorities ==================== -->
+      <div id="step-5" class="step-container">
+        <div class="glass-card rounded-2xl p-6 mb-6">
+          <h2 class="text-xl font-bold text-white mb-4">Asigná prioridad a tus actividades</h2>
+          <div id="priority-sliders" class="space-y-6">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button id="btn-step-5-back" class="btn-secondary flex-1 py-3 rounded-xl text-white font-medium text-sm">Atrás</button>
+          <button id="btn-step-5" class="btn-primary flex-[2] py-3 rounded-xl text-white font-semibold text-sm">
+            <span id="finish-text">Finalizar</span>
+            <span id="finish-spinner" class="hidden"><span class="spinner"></span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = 'http://127.0.0.1:5000';
+      const token = localStorage.getItem('token');
+      if (!token) window.location.href = 'login.html';
+
+      // ─── State ───
+      const DAYS_MAP = [
+        { label: 'Lun', value: 'lunes' },
+        { label: 'Mar', value: 'martes' },
+        { label: 'Mié', value: 'miércoles' },
+        { label: 'Jue', value: 'jueves' },
+        { label: 'Vie', value: 'viernes' },
+        { label: 'Sáb', value: 'sábado' },
+        { label: 'Dom', value: 'domingo' },
+      ];
+
+      const ACTIVITIES = [
+        { name: 'Leer', emoji: '📚' },
+        { name: 'Ejercicio', emoji: '💪' },
+        { name: 'Meditar', emoji: '🧘' },
+        { name: 'Código (personal)', emoji: '💻' },
+        { name: 'Estudiar', emoji: '📝' },
+        { name: 'Escribir', emoji: '✍️' },
+        { name: 'Pintar', emoji: '🎨' },
+        { name: 'Otro', emoji: '➕' },
+      ];
+
+      let state = {
+        currentStep: 1,
+        selectedDays: [],
+        sameSchedule: true,
+        slots: {},        // { lunes: Set([7,8,9,...]), martes: Set([...]) }
+        sharedSlots: new Set(),
+        groceryImportant: null,
+        selectedActivities: [],
+        priorities: {},   // { 'Leer': 5, ... }
+      };
+
+      // ─── Step Navigation ───
+      function goToStep(step) {
+        document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+        state.currentStep = step;
+        document.getElementById(`step-${step}`).classList.add('active');
+        document.getElementById('step-indicator').textContent = `Paso ${step} de 5`;
+        document.getElementById('progress-bar').style.width = `${step * 20}%`;
+
+        if (step === 2) buildTimeGrids();
+        if (step === 5) buildPrioritySliders();
+      }
+
+      // ─── STEP 1: Days ───
+      const daysGrid = document.getElementById('days-grid');
+      DAYS_MAP.forEach(day => {
+        const btn = document.createElement('button');
+        btn.className = 'day-btn rounded-xl py-3 text-center text-sm font-medium';
+        btn.textContent = day.label;
+        btn.dataset.value = day.value;
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('selected');
+          if (state.selectedDays.includes(day.value)) {
+            state.selectedDays = state.selectedDays.filter(d => d !== day.value);
+          } else {
+            state.selectedDays.push(day.value);
+          }
+          document.getElementById('btn-step-1').disabled = state.selectedDays.length === 0;
+          document.getElementById('days-error').classList.toggle('hidden', state.selectedDays.length > 0);
+        });
+        daysGrid.appendChild(btn);
+      });
+
+      document.getElementById('btn-step-1').addEventListener('click', () => {
+        if (state.selectedDays.length === 0) {
+          document.getElementById('days-error').classList.remove('hidden');
+          return;
+        }
+        goToStep(2);
+      });
+
+      // ─── STEP 2: Time Slots ───
+      const sameScheduleToggle = document.getElementById('same-schedule-toggle');
+      const toggleLabel = document.getElementById('toggle-label');
+      const dayTabs = document.getElementById('day-tabs');
+
+      sameScheduleToggle.addEventListener('click', () => {
+        state.sameSchedule = !state.sameSchedule;
+        sameScheduleToggle.classList.toggle('active', state.sameSchedule);
+        toggleLabel.textContent = state.sameSchedule ? 'Mismo horario para todos los días' : 'Personalizar por día';
+        dayTabs.classList.toggle('hidden', state.sameSchedule);
+        buildTimeGrids();
+      });
+
+      function buildTimeGrids() {
+        const container = document.getElementById('time-grid-container');
+        container.innerHTML = '';
+        dayTabs.innerHTML = '';
+
+        if (state.sameSchedule) {
+          container.appendChild(createTimeGrid('shared'));
+        } else {
+          // Build tabs
+          state.selectedDays.forEach((day, i) => {
+            const dayInfo = DAYS_MAP.find(d => d.value === day);
+            const tab = document.createElement('button');
+            tab.className = `tab-btn text-gray-500 ${i === 0 ? 'active' : ''}`;
+            tab.textContent = dayInfo.label;
+            tab.dataset.day = day;
+            tab.addEventListener('click', () => {
+              dayTabs.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+              tab.classList.add('active');
+              container.querySelectorAll('.time-grid').forEach(g => g.classList.add('hidden'));
+              document.getElementById(`grid-${day}`).classList.remove('hidden');
+            });
+            dayTabs.appendChild(tab);
+
+            const grid = createTimeGrid(day);
+            grid.id = `grid-${day}`;
+            if (i > 0) grid.classList.add('hidden');
+            container.appendChild(grid);
+          });
+        }
+      }
+
+      function createTimeGrid(dayKey) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'time-grid grid grid-cols-4 gap-1.5';
+        
+        const slotsSet = dayKey === 'shared' ? state.sharedSlots : (state.slots[dayKey] || (state.slots[dayKey] = new Set()));
+        
+        for (let h = 7; h <= 23; h++) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `hour-btn rounded-lg py-2 text-center ${slotsSet.has(h) ? 'selected' : ''}`;
+          btn.textContent = `${h}:00`;
+          btn.addEventListener('click', () => {
+            if (slotsSet.has(h)) {
+              slotsSet.delete(h);
+              btn.classList.remove('selected');
+            } else {
+              slotsSet.add(h);
+              btn.classList.add('selected');
+            }
+          });
+          wrapper.appendChild(btn);
+        }
+        return wrapper;
+      }
+
+      document.getElementById('btn-step-2').addEventListener('click', () => goToStep(3));
+      document.getElementById('btn-step-2-back').addEventListener('click', () => goToStep(1));
+
+      // ─── STEP 3: Grocery ───
+      document.querySelectorAll('.grocery-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.grocery-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          state.groceryImportant = btn.dataset.value === 'true';
+          document.getElementById('btn-step-3').disabled = false;
+        });
+      });
+
+      document.getElementById('btn-step-3').addEventListener('click', () => goToStep(4));
+      document.getElementById('btn-step-3-back').addEventListener('click', () => goToStep(2));
+
+      // ─── STEP 4: Activities ───
+      const activitiesGrid = document.getElementById('activities-grid');
+      ACTIVITIES.forEach(act => {
+        const card = document.createElement('button');
+        card.className = 'activity-card rounded-xl p-4 text-center';
+        card.innerHTML = `<div class="text-2xl mb-1">${act.emoji}</div><span class="text-sm font-medium">${act.name}</span>`;
+        card.dataset.name = act.name;
+        card.addEventListener('click', () => {
+          const isOther = act.name === 'Otro';
+          const customInput = document.getElementById('custom-activity-input');
+
+          if (card.classList.contains('selected')) {
+            card.classList.remove('selected');
+            state.selectedActivities = state.selectedActivities.filter(a => a !== act.name);
+            if (isOther) customInput.classList.add('hidden');
+          } else {
+            if (state.selectedActivities.length >= 2) return;
+            card.classList.add('selected');
+            state.selectedActivities.push(act.name);
+            if (isOther) customInput.classList.remove('hidden');
+          }
+          document.getElementById('btn-step-4').disabled = state.selectedActivities.length === 0;
+        });
+        activitiesGrid.appendChild(card);
+      });
+
+      document.getElementById('btn-step-4').addEventListener('click', () => goToStep(5));
+      document.getElementById('btn-step-4-back').addEventListener('click', () => goToStep(3));
+
+      // ─── STEP 5: Priorities ───
+      function buildPrioritySliders() {
+        const container = document.getElementById('priority-sliders');
+        container.innerHTML = '';
+
+        const activities = state.selectedActivities.map(name => {
+          if (name === 'Otro') {
+            const customName = document.getElementById('custom-activity-name').value.trim();
+            return customName || 'Actividad personalizada';
+          }
+          return name;
+        });
+
+        activities.forEach((actName, i) => {
+          const initialVal = state.priorities[actName] || 5;
+          const div = document.createElement('div');
+          div.className = 'animate-slide-in';
+          div.style.animationDelay = `${i * 0.15}s`;
+          div.innerHTML = `
+            <label class="block text-sm font-medium text-gray-300 mb-3">¿Cuánta prioridad le querés dar a <span class="text-green-400 font-semibold">${actName}</span>?</label>
+            <div class="flex items-center gap-4">
+              <input type="range" min="1" max="10" value="${initialVal}" class="slider-green flex-1" data-activity="${actName}" />
+              <span class="priority-value text-2xl font-bold text-green-400 w-8 text-center">${initialVal}</span>
+            </div>
+          `;
+          container.appendChild(div);
+
+          const slider = div.querySelector('input[type="range"]');
+          const valueDisplay = div.querySelector('.priority-value');
+          slider.addEventListener('input', () => {
+            valueDisplay.textContent = slider.value;
+            state.priorities[actName] = parseInt(slider.value);
+          });
+          state.priorities[actName] = initialVal;
+        });
+      }
+
+      document.getElementById('btn-step-5-back').addEventListener('click', () => goToStep(4));
+
+      // ─── FINISH ───
+      document.getElementById('btn-step-5').addEventListener('click', async () => {
+        const finishBtn = document.getElementById('btn-step-5');
+        const finishText = document.getElementById('finish-text');
+        const finishSpinner = document.getElementById('finish-spinner');
+        
+        finishBtn.disabled = true;
+        finishText.classList.add('hidden');
+        finishSpinner.classList.remove('hidden');
+
+        // Build slots data
+        const slotsData = {};
+        if (state.sameSchedule) {
+          const hours = Array.from(state.sharedSlots).sort((a, b) => a - b);
+          const blocks = hoursToBlocks(hours);
+          state.selectedDays.forEach(day => {
+            slotsData[day] = blocks;
+          });
+        } else {
+          state.selectedDays.forEach(day => {
+            const hours = Array.from(state.slots[day] || []).sort((a, b) => a - b);
+            slotsData[day] = hoursToBlocks(hours);
+          });
+        }
+
+        // Build activities
+        const activities = state.selectedActivities.map(name => {
+          let actName = name;
+          if (name === 'Otro') {
+            actName = document.getElementById('custom-activity-name').value.trim() || 'Actividad personalizada';
+          }
+          return { name: actName, priority: state.priorities[actName] || 5 };
+        });
+
+        const payload = {
+          days: state.selectedDays,
+          slots: slotsData,
+          grocery_important: state.groceryImportant,
+          activities: activities,
+        };
+
+        try {
+          const res = await fetch(`${API_BASE}/api/onboarding`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            window.location.href = 'index.html';
+          } else {
+            alert(data.message || 'Error al guardar la configuración');
+          }
+        } catch (err) {
+          console.error('Onboarding error:', err);
+          alert('Error de conexión. Asegurate que el servidor esté corriendo.');
+        } finally {
+          finishBtn.disabled = false;
+          finishText.classList.remove('hidden');
+          finishSpinner.classList.add('hidden');
+        }
+      });
+
+      // ─── Helpers ───
+      function hoursToBlocks(hours) {
+        if (hours.length === 0) return [];
+        const blocks = [];
+        let start = hours[0];
+        let end = hours[0];
+        for (let i = 1; i < hours.length; i++) {
+          if (hours[i] === end + 1) {
+            end = hours[i];
+          } else {
+            blocks.push({ start, end: end + 1 });
+            start = hours[i];
+            end = hours[i];
+          }
+        }
+        blocks.push({ start, end: end + 1 });
+        return blocks;
+      }
+    </script>
+  </body>
+</html>

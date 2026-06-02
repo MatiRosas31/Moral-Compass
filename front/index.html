@@ -10,62 +10,81 @@
     />
     <title>Moral Compass</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">
-    </script>
-    <script> src="main.js"</script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="preload.js"></script>
   </head>
   <body class="bg-gray-900 text-white font-sans min-h-screen p-6">
     <div id="super-container" class="relative flex size-full min-h-screen flex-col justify-between group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       
       <!-- HEADER -->
       <div>
-        <div class="flex items-center  p-4 pb-2 justify-between">
-          <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Bienvenido, Matias</h2>
+        <div class="flex items-center p-4 pb-2 justify-between">
+          <h2 class="header-username text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Bienvenido</h2>
+          <a href="profile.html" class="text-gray-400 hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </a>
         </div>
       </div>
   
       <!-- CONTENIDO PRINCIPAL -->
-      <h2 class="today text-white tracking-light text-[28px] font-bold leading-tight px-4 text-left pb-3 pt-5">Today, 10:30 AM</h2>
-      <p class="youhave text-[#d1d5db] text-base font-normal leading-normal pb-3 pt-1 px-4">You have 3 hours and 30 minutes of free time today</p>
-      <p class="detalatalhora text-[#d1d5db] text-base font-normal leading-normal pb-3 pt-1 px-4">You have 3 hours and 30 minutes of free time today</p>
+      <h2 class="today text-white tracking-light text-[28px] font-bold leading-tight px-4 text-left pb-3 pt-5">Cargando...</h2>
+      <p class="youhave text-[#d1d5db] text-base font-normal leading-normal pb-3 pt-1 px-4"></p>
+      <p class="detalatalhora text-[#d1d5db] text-base font-normal leading-normal pb-3 pt-1 px-4"></p>
+      
       <div class="flex flex-col gap-3 p-4">
         <div class="flex gap-6 justify-between">
           <p class="text-white text-base font-medium leading-normal">Tiempo restante del bloque ⚠️: <span id="percentage"></span></p>
         </div>
-        <div class="rounded bg-[#374151]"><div class="barrita h-2 rounded bg-white" style="width: 90%;"></div></div>
-        <p class="tiemporestante text-[#9ca3af] text-sm font-normal leading-normal">3h 30m</p>
+        <div class="rounded bg-[#374151]"><div class="barrita h-2 rounded bg-green-500 transition-all duration-500" style="width: 0%;"></div></div>
+        <p class="tiemporestante text-[#9ca3af] text-sm font-normal leading-normal"></p>
+      </div>
+
+      <!-- FOCUS ACTIVITIES -->
+      <div class="px-4 py-2">
+        <h3 class="text-white text-xl font-bold mb-3">Tus actividades de enfoque</h3>
+        <div id="focus-activities-container" class="space-y-3">
+            <!-- Populated by JS -->
+        </div>
       </div>
   
       <!-- BOTÓN -->
-      <div class="flex justify-center px-4 py-3">
-        <button id="button-ir-a-preguntas" class="startplanning h-12 px-5 w-full max-w-[480px] bg-green-500 hover:bg-green-400 text-white text-base font-bold rounded-lg truncate">
-          Start Planning
+      <div class="flex justify-center px-4 py-5 mt-auto">
+        <button id="button-ir-a-preguntas" class="startplanning h-12 px-5 w-full max-w-[480px] bg-green-500 hover:bg-green-400 text-white text-base font-bold rounded-lg truncate shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]">
+          Empezar a planificar el día
         </button>
       </div>
   
-    <!-- NAV BAR CENTRADO -->
-<div class="flex justify-center gap-5 border-t border-[#1f2937] px-4 pt-2">
-  <!-- Home -->
-  <a class="just flex flex-col items-center justify-end gap-1 text-white" href="#">
-    <div class="flex h-8 items-center justify-center" data-icon="House">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
-      </svg>
-    </div>
-    <p class="text-xs font-medium tracking-[0.015em]">Home</p>
-  </a>
+      <!-- NAV BAR CENTRADO -->
+      <div class="flex justify-center gap-8 border-t border-gray-800 px-4 py-3 bg-gray-900/80 backdrop-blur-md sticky bottom-0">
+        <!-- Home -->
+        <a class="flex flex-col items-center justify-end gap-1 text-green-500" href="index.html">
+          <div class="flex h-6 items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+            </svg>
+          </div>
+          <p class="text-[10px] font-medium mt-1">Inicio</p>
+        </a>
 
-  <!-- Tasks -->
-  <a class="just flex flex-col items-center justify-end gap-1 text-[#9ca3af]" href="#">
-    <div class="flex h-6 items-center justify-center" data-icon="ListBullets">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-        <path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"></path>
-      </svg>
+        <!-- Tasks -->
+        <a class="flex flex-col items-center justify-end gap-1 text-gray-500 hover:text-gray-300" href="#">
+          <div class="flex h-6 items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"></path>
+            </svg>
+          </div>
+          <p class="text-[10px] font-medium mt-1">Tareas</p>
+        </a>
+        
+        <!-- Profile -->
+        <a class="flex flex-col items-center justify-end gap-1 text-gray-500 hover:text-gray-300" href="profile.html">
+          <div class="flex h-6 items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </div>
+          <p class="text-[10px] font-medium mt-1">Perfil</p>
+        </a>
+      </div>
     </div>
-    <p class="text-xs font-medium tracking-[0.015em]">Tasks</p>
-  </a>
-  </div>
-</div>
-<script src="renderer.js"></script>
+    <script src="renderer.js"></script>
   </body>  
 </html>

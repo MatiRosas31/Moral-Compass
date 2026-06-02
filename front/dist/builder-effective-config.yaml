@@ -1,0 +1,19 @@
+directories:
+  output: dist
+  buildResources: assets
+appId: com.mark.moralcompass
+productName: Moral Compass
+copyright: Copyright © 2025 Mark Griffins
+files:
+  - filter:
+      - '**/*'
+win:
+  icon: front/assets/moralcompass_icon.png
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+electronVersion: 37.2.4

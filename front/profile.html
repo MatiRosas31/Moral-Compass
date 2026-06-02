@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Moral Compass - Perfil y configuración" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&family=Inter:wght@400;500;600;700;900" />
+    <title>Moral Compass — Configuración</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+      * { font-family: 'Inter', sans-serif; }
+
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .animate-fade-in-up { animation: fadeInUp 0.5s ease-out both; }
+      .animate-fade-in { animation: fadeIn 0.4s ease-out both; }
+
+      .glass-card {
+        background: rgba(31, 41, 55, 0.6);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(75, 85, 99, 0.4);
+      }
+
+      .day-btn {
+        transition: all 0.25s ease;
+        background: rgba(17, 24, 39, 0.7);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+      }
+      .day-btn:hover { border-color: rgba(34, 197, 94, 0.5); transform: translateY(-1px); }
+      .day-btn.selected {
+        background: rgba(34, 197, 94, 0.2);
+        border-color: #22c55e;
+        color: #4ade80;
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
+      }
+
+      .hour-btn {
+        transition: all 0.2s ease;
+        background: rgba(17, 24, 39, 0.5);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        font-size: 0.75rem;
+      }
+      .hour-btn:hover { border-color: rgba(34, 197, 94, 0.4); }
+      .hour-btn.selected {
+        background: rgba(34, 197, 94, 0.25);
+        border-color: #22c55e;
+        color: #4ade80;
+      }
+
+      .activity-card {
+        transition: all 0.3s ease;
+        background: rgba(17, 24, 39, 0.7);
+        border: 2px solid rgba(75, 85, 99, 0.4);
+      }
+      .activity-card:hover { border-color: rgba(34, 197, 94, 0.4); transform: translateY(-2px); }
+      .activity-card.selected {
+        background: rgba(34, 197, 94, 0.15);
+        border-color: #22c55e;
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+      }
+
+      .choice-btn {
+        transition: all 0.3s ease;
+        background: rgba(17, 24, 39, 0.7);
+        border: 2px solid rgba(75, 85, 99, 0.4);
+      }
+      .choice-btn:hover { border-color: rgba(34, 197, 94, 0.5); }
+      .choice-btn.selected {
+        background: rgba(34, 197, 94, 0.15);
+        border-color: #22c55e;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #22c55e, #059669);
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #16a34a, #047857);
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+      }
+      .btn-primary:disabled {
+        opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none;
+      }
+
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        transition: all 0.3s ease;
+      }
+      .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.25);
+        border-color: rgba(239, 68, 68, 0.5);
+      }
+
+      .bg-grid {
+        background-image: 
+          radial-gradient(circle at 20% 50%, rgba(34, 197, 94, 0.04) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+      }
+
+      .toggle-switch {
+        position: relative; width: 44px; height: 24px;
+        background: rgba(75, 85, 99, 0.5); border-radius: 12px;
+        cursor: pointer; transition: background 0.3s;
+      }
+      .toggle-switch.active { background: #22c55e; }
+      .toggle-switch::after {
+        content: ''; position: absolute; top: 2px; left: 2px;
+        width: 20px; height: 20px; background: white;
+        border-radius: 50%; transition: transform 0.3s;
+      }
+      .toggle-switch.active::after { transform: translateX(20px); }
+
+      .tab-btn {
+        transition: all 0.2s ease;
+        border-bottom: 2px solid transparent;
+        padding: 0.5rem 0.75rem; font-size: 0.8rem;
+      }
+      .tab-btn:hover { color: #d1d5db; }
+      .tab-btn.active { color: #4ade80; border-bottom-color: #22c55e; }
+
+      .slider-green::-webkit-slider-thumb {
+        -webkit-appearance: none; height: 20px; width: 20px;
+        border-radius: 50%; background: #22c55e; cursor: pointer;
+        box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+      }
+      .slider-green::-webkit-slider-runnable-track {
+        height: 6px; border-radius: 3px; background: rgba(75, 85, 99, 0.5);
+      }
+      .slider-green { -webkit-appearance: none; width: 100%; background: transparent; }
+
+      .spinner {
+        border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+        border-radius: 50%; width: 18px; height: 18px;
+        animation: spin 0.6s linear infinite; display: inline-block;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .skeleton {
+        background: linear-gradient(90deg, rgba(75,85,99,0.3) 25%, rgba(75,85,99,0.5) 50%, rgba(75,85,99,0.3) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 0.5rem;
+      }
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white min-h-screen bg-grid">
+    
+    <div class="max-w-lg mx-auto px-4 py-6">
+      <!-- Header -->
+      <div class="flex items-center gap-3 mb-8 animate-fade-in-up">
+        <a href="index.html" class="flex items-center justify-center w-10 h-10 rounded-xl glass-card hover:border-gray-600 transition-all duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </a>
+        <h1 class="text-xl font-bold">Configuración</h1>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading-state" class="space-y-4">
+        <div class="skeleton h-40 w-full"></div>
+        <div class="skeleton h-32 w-full"></div>
+        <div class="skeleton h-24 w-full"></div>
+      </div>
+
+      <!-- Content (hidden until loaded) -->
+      <div id="content" class="hidden space-y-6">
+        
+        <!-- User Info -->
+        <div class="glass-card rounded-2xl p-5 animate-fade-in-up">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xl font-bold" id="user-avatar">M</div>
+            <div>
+              <p id="profile-username" class="font-semibold text-white">—</p>
+              <p id="profile-email" class="text-sm text-gray-400">—</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Days Selection -->
+        <div class="glass-card rounded-2xl p-5 animate-fade-in-up" style="animation-delay: 0.1s">
+          <h3 class="text-base font-semibold mb-3">Días disponibles</h3>
+          <div id="days-grid" class="grid grid-cols-7 gap-2">
+            <!-- JS -->
+          </div>
+        </div>
+
+        <!-- Time Slots -->
+        <div class="glass-card rounded-2xl p-5 animate-fade-in-up" style="animation-delay: 0.2s">
+          <h3 class="text-base font-semibold mb-3">Horarios disponibles</h3>
+          
+          <div class="flex items-center gap-3 mb-4">
+            <div id="same-schedule-toggle" class="toggle-switch active"></div>
+            <span id="toggle-label" class="text-sm text-gray-300">Mismo horario para todos</span>
+          </div>
+
+          <div id="day-tabs" class="hidden flex flex-wrap gap-1 mb-3 border-b border-gray-700/50 pb-2"></div>
+          <div id="time-grid-container"></div>
+        </div>
+
+        <!-- Grocery -->
+        <div class="glass-card rounded-2xl p-5 animate-fade-in-up" style="animation-delay: 0.3s">
+          <h3 class="text-base font-semibold mb-3">¿Compras y cocina importantes?</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <button class="grocery-btn choice-btn rounded-xl py-4 text-center" data-value="true">
+              <div class="text-2xl mb-1">🛒</div>
+              <span class="text-sm font-medium">Sí</span>
+            </button>
+            <button class="grocery-btn choice-btn rounded-xl py-4 text-center" data-value="false">
+              <div class="text-2xl mb-1">✨</div>
+              <span class="text-sm font-medium">No</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Activities -->
+        <div class="glass-card rounded-2xl p-5 animate-fade-in-up" style="animation-delay: 0.4s">
+          <h3 class="text-base font-semibold mb-1">Actividades de enfoque</h3>
+          <p class="text-xs text-gray-400 mb-3">Seleccioná hasta 2</p>
+          <div id="activities-grid" class="grid grid-cols-2 gap-2 mb-3"></div>
+          <div id="custom-activity-input" class="hidden">
+            <input type="text" id="custom-activity-name" 
+              class="w-full rounded-xl px-4 py-3 text-white placeholder-gray-500 text-sm"
+              style="background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(75, 85, 99, 0.5);"
+              placeholder="Nombre de la actividad..." />
+          </div>
+        </div>
+
+        <!-- Priority Sliders -->
+        <div id="priority-section" class="glass-card rounded-2xl p-5 animate-fade-in-up hidden" style="animation-delay: 0.5s">
+          <h3 class="text-base font-semibold mb-4">Prioridad de actividades</h3>
+          <div id="priority-sliders" class="space-y-5"></div>
+        </div>
+
+        <!-- Save Button -->
+        <button id="save-btn" class="btn-primary w-full py-3.5 rounded-xl text-white font-semibold text-sm">
+          <span id="save-text">Guardar cambios</span>
+          <span id="save-spinner" class="hidden"><span class="spinner"></span></span>
+        </button>
+
+        <!-- Logout -->
+        <button id="logout-btn" class="btn-danger w-full py-3 rounded-xl text-red-400 font-medium text-sm">
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = 'http://127.0.0.1:5000';
+      const token = localStorage.getItem('token');
+      if (!token) window.location.href = 'login.html';
+
+      const DAYS_MAP = [
+        { label: 'Lun', value: 'lunes' },
+        { label: 'Mar', value: 'martes' },
+        { label: 'Mié', value: 'miércoles' },
+        { label: 'Jue', value: 'jueves' },
+        { label: 'Vie', value: 'viernes' },
+        { label: 'Sáb', value: 'sábado' },
+        { label: 'Dom', value: 'domingo' },
+      ];
+
+      const ACTIVITIES_LIST = [
+        { name: 'Leer', emoji: '📚' },
+        { name: 'Ejercicio', emoji: '💪' },
+        { name: 'Meditar', emoji: '🧘' },
+        { name: 'Código (personal)', emoji: '💻' },
+        { name: 'Estudiar', emoji: '📝' },
+        { name: 'Escribir', emoji: '✍️' },
+        { name: 'Pintar', emoji: '🎨' },
+        { name: 'Otro', emoji: '➕' },
+      ];
+
+      let state = {
+        selectedDays: [],
+        sameSchedule: true,
+        slots: {},
+        sharedSlots: new Set(),
+        groceryImportant: null,
+        selectedActivities: [],
+        priorities: {},
+      };
+
+      // ─── Load Profile ───
+      async function loadProfile() {
+        try {
+          const res = await fetch(`${API_BASE}/api/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await res.json();
+
+          document.getElementById('profile-username').textContent = data.username || '—';
+          document.getElementById('profile-email').textContent = data.email || '—';
+          document.getElementById('user-avatar').textContent = (data.username || 'U')[0].toUpperCase();
+
+          // Parse availability into days and slots
+          if (data.availability && data.availability.length > 0) {
+            const daySlots = {};
+            data.availability.forEach(a => {
+              const day = a.day_of_week;
+              if (!daySlots[day]) daySlots[day] = new Set();
+              for (let h = a.start_time; h < a.end_time; h++) {
+                daySlots[day].add(h);
+              }
+            });
+            state.selectedDays = Object.keys(daySlots);
+            
+            // Check if all days have the same schedule
+            const dayKeys = Object.keys(daySlots);
+            let allSame = dayKeys.length > 1;
+            if (allSame) {
+              const firstSlots = JSON.stringify(Array.from(daySlots[dayKeys[0]]).sort());
+              for (let i = 1; i < dayKeys.length; i++) {
+                if (JSON.stringify(Array.from(daySlots[dayKeys[i]]).sort()) !== firstSlots) {
+                  allSame = false;
+                  break;
+                }
+              }
+            }
+
+            state.sameSchedule = allSame;
+            if (allSame && dayKeys.length > 0) {
+              state.sharedSlots = new Set(daySlots[dayKeys[0]]);
+            }
+            state.slots = {};
+            dayKeys.forEach(day => {
+              state.slots[day] = new Set(daySlots[day]);
+            });
+          }
+
+          state.groceryImportant = data.grocery_cooking_important || false;
+
+          if (data.activities && data.activities.length > 0) {
+            data.activities.forEach(a => {
+              const known = ACTIVITIES_LIST.find(al => al.name === a.activity_name);
+              if (known) {
+                state.selectedActivities.push(a.activity_name);
+              } else {
+                state.selectedActivities.push('Otro');
+              }
+              state.priorities[a.activity_name] = a.priority;
+            });
+          }
+
+          // Build UI
+          buildDaysGrid();
+          buildScheduleUI();
+          buildGroceryUI();
+          buildActivitiesGrid();
+          buildPrioritySliders();
+
+          document.getElementById('loading-state').classList.add('hidden');
+          document.getElementById('content').classList.remove('hidden');
+        } catch (err) {
+          console.error('Error loading profile:', err);
+          document.getElementById('loading-state').innerHTML = '<p class="text-red-400 text-center">Error al cargar el perfil</p>';
+        }
+      }
+
+      // ─── Days Grid ───
+      function buildDaysGrid() {
+        const grid = document.getElementById('days-grid');
+        grid.innerHTML = '';
+        DAYS_MAP.forEach(day => {
+          const btn = document.createElement('button');
+          btn.className = `day-btn rounded-xl py-2.5 text-center text-xs font-medium ${state.selectedDays.includes(day.value) ? 'selected' : ''}`;
+          btn.textContent = day.label;
+          btn.dataset.value = day.value;
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('selected');
+            if (state.selectedDays.includes(day.value)) {
+              state.selectedDays = state.selectedDays.filter(d => d !== day.value);
+            } else {
+              state.selectedDays.push(day.value);
+            }
+            buildScheduleUI();
+          });
+          grid.appendChild(btn);
+        });
+      }
+
+      // ─── Schedule ───
+      function buildScheduleUI() {
+        const toggle = document.getElementById('same-schedule-toggle');
+        const label = document.getElementById('toggle-label');
+        toggle.classList.toggle('active', state.sameSchedule);
+        label.textContent = state.sameSchedule ? 'Mismo horario para todos' : 'Personalizar por día';
+        document.getElementById('day-tabs').classList.toggle('hidden', state.sameSchedule);
+        buildTimeGrids();
+      }
+
+      const sameScheduleToggle = document.getElementById('same-schedule-toggle');
+      sameScheduleToggle.addEventListener('click', () => {
+        state.sameSchedule = !state.sameSchedule;
+        buildScheduleUI();
+      });
+
+      function buildTimeGrids() {
+        const container = document.getElementById('time-grid-container');
+        const dayTabs = document.getElementById('day-tabs');
+        container.innerHTML = '';
+        dayTabs.innerHTML = '';
+
+        if (state.sameSchedule) {
+          container.appendChild(createTimeGrid('shared'));
+        } else {
+          state.selectedDays.forEach((day, i) => {
+            const dayInfo = DAYS_MAP.find(d => d.value === day);
+            const tab = document.createElement('button');
+            tab.className = `tab-btn text-gray-500 ${i === 0 ? 'active' : ''}`;
+            tab.textContent = dayInfo ? dayInfo.label : day;
+            tab.dataset.day = day;
+            tab.addEventListener('click', () => {
+              dayTabs.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+              tab.classList.add('active');
+              container.querySelectorAll('.time-grid').forEach(g => g.classList.add('hidden'));
+              document.getElementById(`grid-${day}`).classList.remove('hidden');
+            });
+            dayTabs.appendChild(tab);
+
+            const grid = createTimeGrid(day);
+            grid.id = `grid-${day}`;
+            if (i > 0) grid.classList.add('hidden');
+            container.appendChild(grid);
+          });
+        }
+      }
+
+      function createTimeGrid(dayKey) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'time-grid grid grid-cols-4 gap-1.5';
+        const slotsSet = dayKey === 'shared' ? state.sharedSlots : (state.slots[dayKey] || (state.slots[dayKey] = new Set()));
+        
+        for (let h = 7; h <= 23; h++) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `hour-btn rounded-lg py-2 text-center ${slotsSet.has(h) ? 'selected' : ''}`;
+          btn.textContent = `${h}:00`;
+          btn.addEventListener('click', () => {
+            if (slotsSet.has(h)) { slotsSet.delete(h); btn.classList.remove('selected'); }
+            else { slotsSet.add(h); btn.classList.add('selected'); }
+          });
+          wrapper.appendChild(btn);
+        }
+        return wrapper;
+      }
+
+      // ─── Grocery ───
+      function buildGroceryUI() {
+        document.querySelectorAll('.grocery-btn').forEach(btn => {
+          const val = btn.dataset.value === 'true';
+          btn.classList.toggle('selected', val === state.groceryImportant);
+        });
+      }
+      document.querySelectorAll('.grocery-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.grocery-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          state.groceryImportant = btn.dataset.value === 'true';
+        });
+      });
+
+      // ─── Activities ───
+      function buildActivitiesGrid() {
+        const grid = document.getElementById('activities-grid');
+        grid.innerHTML = '';
+        ACTIVITIES_LIST.forEach(act => {
+          const card = document.createElement('button');
+          card.className = `activity-card rounded-xl p-3 text-center ${state.selectedActivities.includes(act.name) ? 'selected' : ''}`;
+          card.innerHTML = `<div class="text-xl mb-0.5">${act.emoji}</div><span class="text-xs font-medium">${act.name}</span>`;
+          card.dataset.name = act.name;
+          card.addEventListener('click', () => {
+            const isOther = act.name === 'Otro';
+            const customInput = document.getElementById('custom-activity-input');
+            if (card.classList.contains('selected')) {
+              card.classList.remove('selected');
+              state.selectedActivities = state.selectedActivities.filter(a => a !== act.name);
+              if (isOther) customInput.classList.add('hidden');
+            } else {
+              if (state.selectedActivities.length >= 2) return;
+              card.classList.add('selected');
+              state.selectedActivities.push(act.name);
+              if (isOther) customInput.classList.remove('hidden');
+            }
+            buildPrioritySliders();
+          });
+          grid.appendChild(card);
+        });
+      }
+
+      // ─── Priority Sliders ───
+      function buildPrioritySliders() {
+        const section = document.getElementById('priority-section');
+        const container = document.getElementById('priority-sliders');
+        container.innerHTML = '';
+
+        if (state.selectedActivities.length === 0) {
+          section.classList.add('hidden');
+          return;
+        }
+        section.classList.remove('hidden');
+
+        state.selectedActivities.forEach(name => {
+          let actName = name;
+          if (name === 'Otro') {
+            actName = document.getElementById('custom-activity-name')?.value?.trim() || 'Actividad personalizada';
+          }
+          const val = state.priorities[actName] || 5;
+          const div = document.createElement('div');
+          div.innerHTML = `
+            <label class="block text-sm font-medium text-gray-300 mb-2">Prioridad de <span class="text-green-400 font-semibold">${actName}</span></label>
+            <div class="flex items-center gap-4">
+              <input type="range" min="1" max="10" value="${val}" class="slider-green flex-1" data-activity="${actName}" />
+              <span class="priority-value text-xl font-bold text-green-400 w-8 text-center">${val}</span>
+            </div>
+          `;
+          container.appendChild(div);
+
+          const slider = div.querySelector('input[type="range"]');
+          const valueDisplay = div.querySelector('.priority-value');
+          slider.addEventListener('input', () => {
+            valueDisplay.textContent = slider.value;
+            state.priorities[actName] = parseInt(slider.value);
+          });
+        });
+      }
+
+      // ─── Save ───
+      document.getElementById('save-btn').addEventListener('click', async () => {
+        const saveBtn = document.getElementById('save-btn');
+        const saveText = document.getElementById('save-text');
+        const saveSpinner = document.getElementById('save-spinner');
+        saveBtn.disabled = true;
+        saveText.classList.add('hidden');
+        saveSpinner.classList.remove('hidden');
+
+        const slotsData = {};
+        if (state.sameSchedule) {
+          const hours = Array.from(state.sharedSlots).sort((a, b) => a - b);
+          const blocks = hoursToBlocks(hours);
+          state.selectedDays.forEach(day => { slotsData[day] = blocks; });
+        } else {
+          state.selectedDays.forEach(day => {
+            const hours = Array.from(state.slots[day] || []).sort((a, b) => a - b);
+            slotsData[day] = hoursToBlocks(hours);
+          });
+        }
+
+        const activities = state.selectedActivities.map(name => {
+          let actName = name;
+          if (name === 'Otro') {
+            actName = document.getElementById('custom-activity-name')?.value?.trim() || 'Actividad personalizada';
+          }
+          return { name: actName, priority: state.priorities[actName] || 5 };
+        });
+
+        const payload = {
+          days: state.selectedDays,
+          slots: slotsData,
+          grocery_important: state.groceryImportant,
+          activities: activities,
+        };
+
+        try {
+          const res = await fetch(`${API_BASE}/api/me`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            saveText.textContent = '¡Guardado!';
+            saveText.classList.remove('hidden');
+            saveSpinner.classList.add('hidden');
+            setTimeout(() => { saveText.textContent = 'Guardar cambios'; }, 2000);
+          } else {
+            alert(data.message || 'Error al guardar');
+          }
+        } catch (err) {
+          console.error('Save error:', err);
+          alert('Error de conexión');
+        } finally {
+          saveBtn.disabled = false;
+          saveText.classList.remove('hidden');
+          saveSpinner.classList.add('hidden');
+        }
+      });
+
+      // ─── Logout ───
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        window.location.href = 'login.html';
+      });
+
+      // ─── Helpers ───
+      function hoursToBlocks(hours) {
+        if (hours.length === 0) return [];
+        const blocks = [];
+        let start = hours[0], end = hours[0];
+        for (let i = 1; i < hours.length; i++) {
+          if (hours[i] === end + 1) { end = hours[i]; }
+          else { blocks.push({ start, end: end + 1 }); start = hours[i]; end = hours[i]; }
+        }
+        blocks.push({ start, end: end + 1 });
+        return blocks;
+      }
+
+      // ─── Init ───
+      loadProfile();
+    </script>
+  </body>
+</html>

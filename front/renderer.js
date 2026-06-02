@@ -123,20 +123,24 @@ document.getElementById('button-ir-a-preguntas').addEventListener('click', () =>
 
     console.log('Respuestas del formulario:', respuestas);
 
-    ipcRenderer.send('guardar-respuestas', respuestas);
-
-    const url = 'https://moral-compass-production.up.railway.app/respuesta';
-    const local_url = "http://127.0.0.1:5000/respuesta";
+    const local_url = "http://127.0.0.1:5000/api/respuesta";
+    const token = localStorage.getItem('token');
 
     fetch(local_url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(respuestas)
     })
       .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+            if (response.status === 401) {
+                window.location.href = 'login.html';
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         return response.json();
       })
       .then(data => {

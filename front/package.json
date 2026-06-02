@@ -1,6 +1,6 @@
 {
   "name": "moral-compass",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Brújula moral para organizar tu día",
   "main": "main.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "build": {
     "appId": "com.mark.moralcompass",
     "productName": "Moral Compass",
-    "copyright": "Copyright © 2025 Mark Griffins",
+    "copyright": "Copyright © 2025 Matias Rosas",
     "directories": {
       "buildResources": "assets",
       "output": "dist"

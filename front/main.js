@@ -6,34 +6,15 @@ function createMainWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), // Para precargar el script preload.js
-      nodeIntegration: true,     // Permite usar require en renderer.js
-      contextIsolation: false,   // Para que ipcRenderer funcione
-    },
-    autoHideMenuBar: true, // Oculta el menú de la aplicación
-  });
-  mainWindow.webContents.openDevTools(); // Abre las herramientas de desarrollo para depuración
-  mainWindow.loadFile('index.html');
-}
-
-function openPreguntasWindow() {
-  const preguntasWindow = new BrowserWindow({
-    width: 500,
-    height: 500,
-    title: 'Gestionar Preguntas',
-    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     },
+    autoHideMenuBar: true,
   });
-
-  preguntasWindow.loadFile('preguntas.html');
+  mainWindow.loadFile('login.html');
+  mainWindow.webContents.openDevTools({ mode: 'detach' })
 }
-
-// Escuchar evento desde renderer.js
-ipcMain.on('abrir-preguntas', () => {
-  openPreguntasWindow();
-});
 
 app.whenReady().then(createMainWindow);
 

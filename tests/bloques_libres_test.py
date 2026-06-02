@@ -37,7 +37,7 @@ def bloques_libres(dia, hora_now):
 # bloques = bloques_libres(dia, hora_random)  # Ejemplo de uso
 
 
-dia = "domingo"  # Ejemplo de día
+dia = "sábado"  # Ejemplo de día
 hora_random = 10.39
 bloques = bloques_libres(dia, hora_random)  # Ejemplo de uso
 

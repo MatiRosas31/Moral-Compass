@@ -1,59 +1,50 @@
 import datetime
+import os
+import functools
 from flask import Flask, request, jsonify
-from flask_cors import CORS # Importa Flask-CORS
-import os # Importa el módulo os para acceder a variables de entorno
-import pytz # Importa la biblioteca pytz
+from flask_cors import CORS
+import pytz
+import bcrypt
+import jwt
+from dotenv import load_dotenv
+from db import get_db_connection
+
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app) # Habilita CORS para todas las rutas de tu aplicación
+CORS(app)
 
 # Define el huso horario de Uruguay
 URUGUAY_TIMEZONE = pytz.timezone('America/Montevideo')
 
-"""""
-1) Redefinir los bloques en los dias libres para que sean mas largos [CCOMPLETADO]
-2) Siempre se debe dejar un bloque de 1 hora par estudiar en la semana[COMPLETADO]
-2) Los sabados luego de las 19:00 se pueden hacer cosas de ocio. O sea, no se puede estudiar ni trabajar.
-"""""
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "moral_compass_secret_key_2025")
+
+
 # -------------------------------
-# CONFIGURACIÓN INICIAL
-# python moral_compass.py 
+# DECORADOR DE AUTENTICACIÓN
 # -------------------------------
-"""""
-Preguntas al usuario:
-1) Trabajas? (Si es asi, se definen los horarios ocupados)
-2) Que dias de la semana trabajas?
-3) De que hora a que hora trabajas en estos dias?
-4) Estudias? (Si es asi, se definen los horarios ocupados)
-5) Que dias de la semana estudias?
-6) De que hora a que hora estudias en estos dias?
-7) Haces ejercicio? (Si es asi, se definen los horarios ocupados)
-8) Que dias de la semana haces ejercicio?
-9) De que hora a que hora haces ejercicio en estos dias?
-10) Realizas alguna otra actividad de ocio? (Si es asi, se definen los horarios ocupados)
-# 11) Que dias de la semana realizas esta actividad?
-# 12) De que hora a que hora realizas esta actividad en estos dias?
 
-"""
+def token_required(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
 
+        if not token:
+            return jsonify({"status": "error", "message": "Token no proporcionado."}), 401
 
-def horarios_ocupados(dias: list[str], horas: list[int]):
-    """
-    Esta función recibe el nombre de la actividad, los días de la semana y las horas ocupadas.
-    Devuelve un diccionario con los horarios ocupados.
-    """
-    horarios = {}
-    for dia, hora in zip(dias, horas):
-        horarios[dia] = hora
-    return horarios
+        try:
+            payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
+            user_id = payload["user_id"]
+        except jwt.ExpiredSignatureError:
+            return jsonify({"status": "error", "message": "El token ha expirado."}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"status": "error", "message": "Token inválido."}), 401
 
-
-
-#Horarios ocupados
-# Se definen los horarios ocupados para estudio, trabajo y tenis
-HORARIO_ESTUDIO_TRABAJO = {"lunes": [8, 19], "martes": [8, 19], "miércoles": [8, 19], "jueves": [8, 19], "viernes": [8, 19]}
-HORARIO_TENIS = {"martes": [19.5, 23], "jueves": [19.5, 23]}
-HORARIO_FIN_DE_SEMANA = {"sábado": [22, 23], "domingo": [20, 23]}
+        return f(user_id, *args, **kwargs)
+    return decorated
 
 
 # -------------------------------
@@ -74,6 +65,7 @@ class Tarea:
 
     def __repr__(self):
         return f"{self.nombre} ({self.duracion} min, puntaje: {self.puntaje():.1f})"
+
 
 # -------------------------------
 # UTILIDADES DE TIEMPO
@@ -106,39 +98,22 @@ def convertir_dia(dia):
     return mapa[dia]
 
 
-def bloques_libres(dia, hora_now):
-    bloques = []
-
-    # Bloques predefinidos ocupados
-    # Se consideran horarios de estudio, trabajo y tenis
-    # Si el día es sábado o domingo, se ignoran los horarios de estudio y trabajo
-    ocupados = []
-    if dia in HORARIO_ESTUDIO_TRABAJO:
-        ocupados.append(HORARIO_ESTUDIO_TRABAJO[dia])
-    if dia in HORARIO_TENIS:
-        ocupados.append(HORARIO_TENIS[dia])
-    if dia in HORARIO_FIN_DE_SEMANA:
-        ocupados.append(HORARIO_FIN_DE_SEMANA[dia])
-# Si el dia no esta dentro de ninguno de los horarios, se considera que no hay ocupación
-    inicio = 10.0
-    fin = 23.0
-
-    for bloque in sorted(ocupados):
-        if inicio < bloque[0]:
-            bloques.append([inicio, bloque[0]])
-        inicio = max(inicio, bloque[1])
-    if inicio < fin:
-        bloques.append([inicio, fin])
-
+def bloques_libres(dia, hora_now, user_availability_for_day):
+    """
+    Retorna los bloques libres del usuario para el día dado,
+    filtrados por la hora actual.
+    user_availability_for_day es una lista de [start, end] que representan
+    los horarios en los que el usuario está LIBRE.
+    """
     # Filtrar bloques anteriores a la hora actual
-    return [b for b in bloques if b[1] > hora_now]
+    return [b for b in user_availability_for_day if b[1] > hora_now]
 
 
 def duracion_bloque(b):
     # Obtiene la hora actual en el huso horario de Uruguay
     ahora_utc = datetime.datetime.now(pytz.utc)
     ahora_uruguay = ahora_utc.astimezone(URUGUAY_TIMEZONE)
-    hora_actual = ahora_uruguay.hour + ahora_uruguay.minute / 60  # 19.01 # *(Para testear)
+    hora_actual = ahora_uruguay.hour + ahora_uruguay.minute / 60
     final_bloque = b[1]
     inicio_bloque = b[0] if hora_actual < b[0] else hora_actual
     return int((final_bloque - inicio_bloque) * 60) 
@@ -161,6 +136,8 @@ def porcentaje_bloque_disponible(b):
     restante = fin_bloque - hora_actual
     porcentaje = (restante / duracion_total) * 100
     return round(porcentaje)
+
+
 # -------------------------------
 # GENERACIÓN DE TAREAS
 # -------------------------------
@@ -184,7 +161,7 @@ def tareas_basicas(data):
     if examen == "si":
         tareas.append(Tarea("Estudiar / Preparar entrevista", urgencia=9, prioridad=10, duracion=120, tipo="obligación"))
     else:
-        duracion_matematicas = 90 if (dia_actual == "sábado" or dia_actual == "domingo") else 60
+        duracion_matematicas = 60 if (dia_actual == "sábado" or dia_actual == "domingo") else 45
         tareas.append(Tarea("Estudiar Matematicas / Programacion", urgencia=5, prioridad=6, duracion=duracion_matematicas, tipo="obligación"))
     energia = int(data.get("energiaSlider", 5))  # Valor por defecto 5
     #energia = int(input("¿Cuánta energía tienes ahora mismo? (0 a 10): "))
@@ -241,66 +218,335 @@ def planificar_tareas(tareas, bloques):
 
 
 # -------------------------------
-# MAIN
+# HELPERS DE BASE DE DATOS
 # -------------------------------
-@app.route('/', methods=["GET"])
-def main():
-    welcome = {
-        "status": "success",
-        "today": "",
-        "message_time": "",
-        "message_time2": "",
-        "tiempo_restante": "",
-        "tiempo_restante_porcentaje": ""
-    }
-    dia_raw, hora_now = hora_actual()
-    dia_raw = dia_raw.lower()
-    dia = convertir_dia(dia_raw)
-    
-    # Obtiene la hora actual en el huso horario de Uruguay para mostrar
-    ahora_utc = datetime.datetime.now(pytz.utc)
-    now = ahora_utc.astimezone(URUGUAY_TIMEZONE)
-    now_time = f"{now.hour:02}:{now.minute:02}"
-    
-    print(f"\n📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}")
-    welcome['today'] = f"📅 Hoy es {dia.capitalize()} — Hora actual: {now_time}"
-    bloques = bloques_libres(dia, hora_now)
-    if not bloques:
-        print("No tienes tiempo libre disponible hoy 💤")
-        welcome['message_time'] =f"No tienes tiempo libre disponible hoy 💤"
-        return jsonify(welcome)
 
-    print(f"🕒 Bloques libres detectados:")
-    welcome['message_time'] = f"🕒 Bloques libres detectados:"
-    for b in bloques:
-        # Obtiene la hora actual en el huso horario de Uruguay para mostrar
-        ahora_utc_b = datetime.datetime.now(pytz.utc)
-        ahora_uruguay_b = ahora_utc_b.astimezone(URUGUAY_TIMEZONE)
-        horita = f"{ahora_uruguay_b.hour:02}:{ahora_uruguay_b.minute:02}"
-        horita_decimal = hora_actual_decimal()
-        print(f" - De {b[0]:.2f} a {b[1]:.2f} hs")
-        welcome['message_time2'] = f" - De {b[0]:.2f} a {b[1]:.2f} hs"
-    print(f"Tiempo restante del bloque ⚠️  De {horita if horita_decimal > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)")
-    welcome['tiempo_restante'] = f"De {horita if horita_decimal > b[0] else b[0]} a {b[1]:.2f} hs ({duracion_bloque(b)} min)"
-    print(f"Porcentaje de tiempo restante del bloque ⚠️: {porcentaje_bloque_disponible(b)}%")
-    welcome['tiempo_restante_porcentaje'] = f"{porcentaje_bloque_disponible(b)}"
-    return jsonify(welcome)
+def obtener_disponibilidad_usuario(user_id, dia):
+    """Obtiene los bloques de disponibilidad del usuario para un día dado."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT start_time, end_time FROM user_availability WHERE user_id = %s AND day_of_week = %s ORDER BY start_time",
+        (user_id, dia)
+    )
+    slots = [[float(row[0]), float(row[1])] for row in cur.fetchall()]
+    cur.close()
+    conn.close()
+    return slots
 
-@app.route('/respuesta', methods=["POST"])
-def respuesta():
-    dia_raw, hora_now = hora_actual()
-    dia_raw = dia_raw.lower()
-    dia = convertir_dia(dia_raw)
-    
-    bloques = bloques_libres(dia, hora_now)
-    
+
+def obtener_actividades_usuario(user_id):
+    """Obtiene las actividades de enfoque del usuario."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT activity_name, priority FROM user_focus_activities WHERE user_id = %s ORDER BY priority DESC",
+        (user_id,)
+    )
+    activities = [{"name": row[0], "priority": row[1]} for row in cur.fetchall()]
+    cur.close()
+    conn.close()
+    return activities
+
+
+# -------------------------------
+# ENDPOINTS DE AUTENTICACIÓN
+# -------------------------------
+
+@app.route('/api/register', methods=["POST"])
+def register():
     data = request.get_json()
-    
+    username = data.get("username", "").strip()
+    email = data.get("email", "").strip()
+    password = data.get("password", "")
+
+    if not username or not email or not password:
+        return jsonify({"status": "error", "message": "Todos los campos son obligatorios."}), 400
+
+    password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s)",
+            (username, email, password_hash)
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({"status": "success", "message": "Usuario creado exitosamente."}), 201
+    except Exception as e:
+        error_msg = str(e)
+        if "username" in error_msg:
+            return jsonify({"status": "error", "message": "El nombre de usuario ya está en uso."}), 409
+        elif "email" in error_msg:
+            return jsonify({"status": "error", "message": "El correo electrónico ya está registrado."}), 409
+        return jsonify({"status": "error", "message": f"Error al crear el usuario: {error_msg}"}), 500
+
+
+@app.route('/api/login', methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("username", "").strip()
+    password = data.get("password", "")
+
+    if not username or not password:
+        return jsonify({"status": "error", "message": "Usuario y contraseña son obligatorios."}), 400
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, password_hash, onboarding_complete, username FROM users WHERE username = %s",
+            (username,)
+        )
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if not user:
+            return jsonify({"status": "error", "message": "Usuario no encontrado."}), 404
+
+        user_id, password_hash, onboarding_complete, db_username = user
+
+        if not bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8")):
+            return jsonify({"status": "error", "message": "Contraseña incorrecta."}), 401
+
+        token = jwt.encode(
+            {
+                "user_id": user_id,
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+            },
+            JWT_SECRET_KEY,
+            algorithm="HS256"
+        )
+
+        return jsonify({
+            "status": "success",
+            "token": token,
+            "onboarding_complete": onboarding_complete,
+            "username": db_username
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Error al iniciar sesión: {str(e)}"}), 500
+
+
+# -------------------------------
+# ENDPOINTS DE ONBOARDING / PERFIL
+# -------------------------------
+
+@app.route('/api/onboarding', methods=["POST"])
+@token_required
+def onboarding(user_id):
+    data = request.get_json()
+    days = data.get("days", [])
+    slots = data.get("slots", {})
+    grocery_important = data.get("grocery_important", False)
+    activities = data.get("activities", [])
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Eliminar datos existentes del usuario
+        cur.execute("DELETE FROM user_availability WHERE user_id = %s", (user_id,))
+        cur.execute("DELETE FROM user_focus_activities WHERE user_id = %s", (user_id,))
+
+        # Insertar nueva disponibilidad
+        for day in days:
+            day_slots = slots.get(day, [])
+            for slot in day_slots:
+                cur.execute(
+                    "INSERT INTO user_availability (user_id, day_of_week, start_time, end_time) VALUES (%s, %s, %s, %s)",
+                    (user_id, day, slot["start"], slot["end"])
+                )
+
+        # Insertar nuevas actividades de enfoque
+        for activity in activities:
+            cur.execute(
+                "INSERT INTO user_focus_activities (user_id, activity_name, priority) VALUES (%s, %s, %s)",
+                (user_id, activity["name"], activity["priority"])
+            )
+
+        # Actualizar estado del onboarding y preferencia de compras
+        cur.execute(
+            "UPDATE users SET onboarding_complete = TRUE, grocery_cooking_important = %s WHERE id = %s",
+            (grocery_important, user_id)
+        )
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Error al guardar onboarding: {str(e)}"}), 500
+
+
+@app.route('/api/me', methods=["GET"])
+@token_required
+def get_profile(user_id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Obtener datos del usuario
+        cur.execute(
+            "SELECT username, email, onboarding_complete, grocery_cooking_important FROM users WHERE id = %s",
+            (user_id,)
+        )
+        user = cur.fetchone()
+
+        if not user:
+            cur.close()
+            conn.close()
+            return jsonify({"status": "error", "message": "Usuario no encontrado."}), 404
+
+        username, email, onboarding_complete, grocery_cooking_important = user
+
+        # Obtener disponibilidad
+        cur.execute(
+            "SELECT day_of_week, start_time, end_time FROM user_availability WHERE user_id = %s ORDER BY day_of_week, start_time",
+            (user_id,)
+        )
+        availability = [
+            {"day": row[0], "start": float(row[1]), "end": float(row[2])}
+            for row in cur.fetchall()
+        ]
+
+        # Obtener actividades
+        cur.execute(
+            "SELECT activity_name, priority FROM user_focus_activities WHERE user_id = %s ORDER BY priority DESC",
+            (user_id,)
+        )
+        activities = [{"name": row[0], "priority": row[1]} for row in cur.fetchall()]
+
+        cur.close()
+        conn.close()
+
+        return jsonify({
+            "status": "success",
+            "username": username,
+            "email": email,
+            "onboarding_complete": onboarding_complete,
+            "grocery_cooking_important": grocery_cooking_important,
+            "availability": availability,
+            "activities": activities
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Error al obtener perfil: {str(e)}"}), 500
+
+
+@app.route('/api/me', methods=["PUT"])
+@token_required
+def update_profile(user_id):
+    data = request.get_json()
+    days = data.get("days", [])
+    slots = data.get("slots", {})
+    grocery_important = data.get("grocery_important", False)
+    activities = data.get("activities", [])
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Reemplazar disponibilidad
+        cur.execute("DELETE FROM user_availability WHERE user_id = %s", (user_id,))
+        for day in days:
+            day_slots = slots.get(day, [])
+            for slot in day_slots:
+                cur.execute(
+                    "INSERT INTO user_availability (user_id, day_of_week, start_time, end_time) VALUES (%s, %s, %s, %s)",
+                    (user_id, day, slot["start"], slot["end"])
+                )
+
+        # Reemplazar actividades
+        cur.execute("DELETE FROM user_focus_activities WHERE user_id = %s", (user_id,))
+        for activity in activities:
+            cur.execute(
+                "INSERT INTO user_focus_activities (user_id, activity_name, priority) VALUES (%s, %s, %s)",
+                (user_id, activity["name"], activity["priority"])
+            )
+
+        # Actualizar preferencia de compras
+        cur.execute(
+            "UPDATE users SET grocery_cooking_important = %s WHERE id = %s",
+            (grocery_important, user_id)
+        )
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Error al actualizar perfil: {str(e)}"}), 500
+
+
+# -------------------------------
+# ENDPOINTS PRINCIPALES
+# -------------------------------
+
+@app.route('/api/home', methods=["GET"])
+@token_required
+def home(user_id):
+    dia_raw, hora_now = hora_actual()
+    dia_raw = dia_raw.lower()
+    dia = convertir_dia(dia_raw)
+
+    # Obtener disponibilidad del usuario para hoy
+    user_slots = obtener_disponibilidad_usuario(user_id, dia)
+    bloques = bloques_libres(dia, hora_now, user_slots)
+
+    # Calcular tiempo restante
+    tiempo_restante_minutos = 0
+    for b in bloques:
+        tiempo_restante_minutos += duracion_bloque(b)
+
+    # Calcular porcentaje de tiempo restante
+    tiempo_total_minutos = 0
+    for b in user_slots:
+        tiempo_total_minutos += int((b[1] - b[0]) * 60)
+    tiempo_restante_porcentaje = round((tiempo_restante_minutos / tiempo_total_minutos) * 100) if tiempo_total_minutos > 0 else 0
+
+    # Obtener actividades de enfoque
+    actividades = obtener_actividades_usuario(user_id)
+
+    # Obtener nombre de usuario
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+    username = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+
+    return jsonify({
+        "today": dia,
+        "bloques": bloques,
+        "tiempo_restante_minutos": tiempo_restante_minutos,
+        "tiempo_restante_porcentaje": tiempo_restante_porcentaje,
+        "actividades_foco": actividades,
+        "username": username
+    })
+
+
+@app.route('/api/respuesta', methods=["POST"])
+@token_required
+def api_respuesta(user_id):
+    dia_raw, hora_now = hora_actual()
+    dia_raw = dia_raw.lower()
+    dia = convertir_dia(dia_raw)
+
+    # Obtener disponibilidad del usuario para hoy desde la BD
+    user_slots = obtener_disponibilidad_usuario(user_id, dia)
+    bloques = bloques_libres(dia, hora_now, user_slots)
+
+    data = request.get_json()
+
     respuestas = {
         "message_tareas": "",
         "message_plan_4_today": "",
         "plan_today": []  
-        }
+    }
     tareas = tareas_basicas(data)
     if not tareas:
         print("No se han registrado tareas.")
@@ -317,6 +563,7 @@ def respuesta():
         print(f" - {h:02}:{m:02} → {tarea.nombre} ({tarea.duracion} min)")
         respuestas['plan_today'].append(f" - {h:02}:{m:02} → {tarea.nombre} ({tarea.duracion} min)") 
     return jsonify(respuestas)
+
 
 if __name__ == "__main__":
     # Obtiene el puerto de la variable de entorno PORT, o usa 5000 como fallback
